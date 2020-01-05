@@ -32,6 +32,17 @@ client.on('message', msg => {
             response.addField(config.Prefix + item.input, item.description)
         }
         msg.channel.send(response);
+    } else if(Command == Commands.repository.input){
+        let response = new Discord.RichEmbed()
+            .setTitle("Here are the repositories of the omega project")
+            .setTimestamp(new Date())
+            .setURL(config.URL)
+            .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
+        for(i in Commands.repository.repository){
+            item = Commands.repository.repository[i];
+            response.addField(item.name, item.desc + " (" + item.url + ")")
+        }
+        msg.channel.send(response);
     }
 });
 

@@ -13,3 +13,19 @@ Commands :
   help :
     input : "help"
     description : "Return a help"
+  repository:
+    input : "repositories"
+    description : "Return the list of the repositories in the Omega project"
+    repository :
+      - url : "https://github.com/Omega-Numworks/Omega"
+        name : "Omega"
+        desc : "Omega main repository"
+      - url : "https://github.com/Omega-Numworks/Omega-Themes"
+        name : "Omega themes"
+        desc : "Omega themes desc"
+      - url : "https://github.com/Omega-Numworks/Omega-CLI-Installer"
+        name : "Omega cli installer"
+        desc : "Omega cli installer desc"
+      - url : "https://github.com/Omega-Numworks/Omega-Design"
+        name : "Omega Design"
+        desc : "Omega design desc"
