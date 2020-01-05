@@ -1,0 +1,15 @@
+###### THIS IS A BLANK CONFIG ######
+# Editing this file is useless
+# You have to move it to config.yaml
+####################################
+
+Token : "INSERT HERE THE DISCORD BOT TOKEN"
+
+Prefix : "!"
+
+URL : "https://omega-numworks.github.io/"
+
+Commands :
+  help :
+    input : "help"
+    description : "Return a help"
