@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require("fs");
 const yaml = require("yaml");
+var ON_DEATH = require('death');
 
 
 // CONFIG
@@ -33,5 +34,11 @@ client.on('message', msg => {
         msg.channel.send(response);
     }
 });
+
+ON_DEATH(function(signal, err) {
+    console.log("Destroying the bot.");
+    client.destroy();
+    process.exit();
+})
 
 client.login(config.Token);
