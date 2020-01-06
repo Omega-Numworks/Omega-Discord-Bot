@@ -43,6 +43,17 @@ client.on('message', msg => {
             response.addField(item.name, item.desc + " (" + item.url + ")")
         }
         msg.channel.send(response);
+    } else if(Command == Commands.team.input){
+        let response = new Discord.RichEmbed()
+            .setTitle("Here are the people who develop the omega project")
+            .setTimestamp(new Date())
+            .setURL(config.URL)
+            .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
+        let team = JSON.parse(fs.readFileSync(Commands.team.file))
+        team.forEach(element => {
+            response.addField(element.name, "Github : " + element.Github + " Discord : " + client.users.find(user => user.id == element.DiscordId).tag)
+        });
+        msg.channel.send(response);
     }
 });
 

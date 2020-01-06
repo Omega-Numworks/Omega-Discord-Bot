@@ -13,6 +13,10 @@ Commands :
   help :
     input : "help"
     description : "Return a help"
+  team :
+    input : "team"
+    description : "Return infos about the omega team"
+    file : "team.json"
   repository:
     input : "repositories"
     description : "Return the list of the repositories in the Omega project"
