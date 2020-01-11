@@ -23,7 +23,7 @@ client.on('message', msg => {
             }
         })
         if(ForbiddenWordPresent){
-            msg.channel.send("<@" + msg.author.id + "> " + config.ForbiddenWordsResponseFR + "\n\n" + "<@" + msg.author.id + "> " + config.ForbiddenWordsResponseEN);
+            msg.channel.send("**FR**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseFR + "\n\n**EN**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseEN);
             return
         }
         config.ShortForbiddenWords.forEach((item) => {
