@@ -9,6 +9,20 @@ Prefix : "!"
 
 URL : "https://omega-numworks.github.io/"
 
+ForbiddenWords:
+  - "slt"
+  - "salut"
+  - "bonjour"
+  - "bonsoir"
+
+ForbiddenWordsResponseFR: "dans les channels ne terminant pas par `-fr`, il est impératif d'écrire en anglais, étant donné que nous avons des contributeurs anglais. Si vous souhaitez parler en français, d'autres channels sont disponibles sur notre serveur. Plus d'infos sur <#663457765058150400>."
+ForbiddenWordsResponseEN: "in channels not ending with `-fr`, it is imperative to write in English, since we have English contributors. If you wish to speak in French, other channels are available on our server. More info on <#663457765058150400>."
+
+ShortForbiddenWords:
+  - "mdr"
+
+ShortForbiddenWordsResponse : "In english please"
+
 Commands :
   help :
     input : "help"

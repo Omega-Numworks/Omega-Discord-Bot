@@ -15,6 +15,29 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+    if(!msg.channel.name.toLowerCase().includes("fr")){
+        ForbiddenWordPresent = false;
+        config.ForbiddenWords.forEach((item) => {
+            if(msg.content.toLowerCase().includes(item)){
+                ForbiddenWordPresent = true;
+            }
+        })
+        if(ForbiddenWordPresent){
+            msg.channel.send("<@" + msg.author.id + "> " + config.ForbiddenWordsResponseFR + "\n\n" + "<@" + msg.author.id + "> " + config.ForbiddenWordsResponseEN);
+            return
+        }
+        config.ShortForbiddenWords.forEach((item) => {
+            if(msg.content.toLowerCase().includes(item)){
+                ForbiddenWordPresent = true;
+            }
+        })
+        if(ForbiddenWordPresent){
+            msg.reply(config.ShortForbiddenWordsResponse);
+            return
+        }
+    }
+
+
     if(!msg.content.startsWith(config.Prefix))
         return;
 
@@ -54,10 +77,6 @@ client.on('message', msg => {
             response.addField(element.name, "Github : " + element.Github + " Discord : " + client.users.find(user => user.id == element.DiscordId).tag)
         });
         msg.channel.send(response);
-    }
-
-    if(msg.content.toLowerCase().includes("mdr" && !msg.channel.name.includes("fr"))){
-        msg.reply("In English please!");
     }
 });
 
