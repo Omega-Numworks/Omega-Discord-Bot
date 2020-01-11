@@ -55,6 +55,10 @@ client.on('message', msg => {
         });
         msg.channel.send(response);
     }
+
+    if(msg.content.includes("mdr" && msg.channel.name.includes("fr"))){
+        msg.reply("In English please!");
+    }
 });
 
 ON_DEATH(function(signal, err) {
