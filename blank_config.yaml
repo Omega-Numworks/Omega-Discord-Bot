@@ -21,7 +21,7 @@ ForbiddenWordsResponseEN: "in channels not ending with `-fr`, it is imperative t
 ShortForbiddenWords:
   - "mdr"
 
-ShortForbiddenWordsResponse : "In english please"
+ShortForbiddenWordsResponse : "in english please"
 
 Commands :
   help :
