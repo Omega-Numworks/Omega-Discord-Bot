@@ -26,6 +26,8 @@
   "dependencies": {
     "death": "^1.1.0",
     "discord.js": "^11.5.1",
-    "yaml": "^1.7.2"
+    "yaml": "^1.7.2",
+    "simple-youtube-api": "^3.0.0",
+    "ytdl-core": "^1.0.7"
   }
 }

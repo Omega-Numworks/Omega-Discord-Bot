@@ -4,6 +4,9 @@
 ####################################
 
 Token : "INSERT HERE THE DISCORD BOT TOKEN"
+GoogleApiKey : "INSERT HERE YOUR YOUTUBE API KEY" 
+
+Status : "!Help 😉"
 
 Prefix : "!"
 
@@ -47,3 +50,27 @@ Commands :
       - url : "https://github.com/Omega-Numworks/Omega-Design"
         name : "Omega Design"
         desc : "Omega design desc"
+  play :
+    input : "play"
+    description : "Requiers the song Url 📎 or name and Connect me to your vocal channel if I wasn't allredy connect, else add your song to the queue !"
+  stop :
+    input : "stop"
+    description : "⏹ Stop the music playing 🎶!"
+  pause :
+    input : "pause"
+    description : "⏸ Put music in pause 🎶!"
+  resume :
+    input : "resume"
+    description : "▶ Resume paused music 🎶!"
+  skip :
+    input : "skip"
+    description : "⏭ Skip the current song 🎶!"
+  nowplaying :
+    input : "np"
+    description : "Return the current playing song 🎶!"
+  queue : 
+    input : "queue"
+    description : "Return the list of queued map 🎶!"
+  volume :
+    input : "volume"
+    description : "Returne my volume level 🔉, with the number argument you can deacrease my volume or increase my volume."
