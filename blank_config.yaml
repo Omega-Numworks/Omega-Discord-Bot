@@ -17,12 +17,21 @@ ForbiddenWords:
   - "salut"
   - "bonjour"
   - "bonsoir"
+  - "pourquoi"
+  - "comment"
 
 ForbiddenWordsResponseFR: "dans les channels ne terminant pas par `-fr`, il est impératif d'écrire en anglais, étant donné que nous avons des contributeurs anglais. Si vous souhaitez parler en français, d'autres channels sont disponibles sur notre serveur. Plus d'infos sur <#663457765058150400>."
 ForbiddenWordsResponseEN: "in channels not ending with `-fr`, it is imperative to write in English, since we have English contributors. If you wish to speak in French, other channels are available on our server. More info on <#663457765058150400>."
 
 ShortForbiddenWords:
   - "mdr"
+  - "ptdr"
+  - "oui"
+  - "non"
+  - "de"
+  - "hein"
+  - "avec"
+  - "pour"
 
 ShortForbiddenWordsResponse : "in english please!"
 
@@ -52,7 +61,7 @@ Commands :
         desc : "Omega design desc"
   play :
     input : "play"
-    description : "Requiers the song Url 📎 or name and Connect me to your vocal channel if I wasn't allredy connect, else add your song to the queue !"
+    description : "Requier the song Url 📎 or name and Connect me to your vocal channel if I wasn't allredy connect, else add your song to the queue !"
   stop :
     input : "stop"
     description : "⏹ Stop the music playing 🎶!"
