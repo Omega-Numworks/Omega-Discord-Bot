@@ -82,4 +82,4 @@ Commands :
     description : "Return the list of queued map 🎶!"
   volume :
     input : "volume"
-    description : "Returne my volume level 🔉, with the number argument you can deacrease my volume or increase my volume."
+    description : "Return my volume level 🔉, with the number argument you can deacrease my volume or increase my volume."
