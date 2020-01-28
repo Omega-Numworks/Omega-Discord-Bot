@@ -6,7 +6,7 @@ A bot for our Discord
 Git clone the repository and go inside Omega-discord-bot repository, and then :
 `npm i`
 
-`npm install oppus-script -save`
+`npm install oppus-script --save`
 
 `mv blank_config.yaml config.yaml`
 
