@@ -23,6 +23,8 @@ ShortForbiddenWords:
 
 ShortForbiddenWordsResponse : "in english please!"
 
+Omega-Repository : "Omega-Numworks/Omega"
+
 Commands :
   help :
     input : "help"
