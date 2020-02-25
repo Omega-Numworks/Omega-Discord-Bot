@@ -48,7 +48,7 @@ client.on('message', msg => {
         }
 
         request({
-            url : "https://api.github.com/repos/" + config.Omega-Repository + "/issues/" + IssueId,
+            url : "https://api.github.com/repos/" + config["Omega-Repository"] + "/issues/" + IssueId,
             headers : {
                 'User-Agent' : 'Omega-Discord-Bot'
             }
