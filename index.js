@@ -140,10 +140,10 @@ client.on('message', msg => {
             multiplier = 1000;
         }
         let durationComplete = multiplier * durationInteger;
-        if(durationComplete > 7000)
-            durationComplete = 7000;
-        else if(durationComplete <= 100)
-            durationComplete = 100;
+        if(durationComplete > config.DurationMax)
+            durationComplete = config.DurationMax;
+        else if(durationComplete <= config.DurationMin)
+            durationComplete = config.DurationMin;
         msg.delete(durationComplete);
 
     }

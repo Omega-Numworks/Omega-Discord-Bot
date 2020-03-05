@@ -8,6 +8,9 @@ Channel : "ID OF CHANNEL OF THE 7S CHANNEL"
 
 Prefix : "!"
 
+DurationMin : 200
+DurationMax : 30000
+
 URL : "https://omega-numworks.github.io/"
 
 ForbiddenWords:
