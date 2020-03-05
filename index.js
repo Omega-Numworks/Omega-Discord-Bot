@@ -136,7 +136,7 @@ client.on('message', msg => {
         let duration = m.substr(0, m.length - 1);
         let durationInteger = parseInt(duration);
         if (isNaN(durationInteger)) {
-            durationInteger = 7;
+            durationInteger = 30;
             multiplier = 1000;
         }
         let durationComplete = multiplier * durationInteger;
