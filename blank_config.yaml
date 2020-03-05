@@ -3,7 +3,8 @@
 # You have to move it to config.yaml
 ####################################
 
-Token : ""
+Token : "INSERT HERE THE DISCORD BOT TOKEN"
+Channel : "ID OF CHANNEL"
 
 Prefix : "!"
 
