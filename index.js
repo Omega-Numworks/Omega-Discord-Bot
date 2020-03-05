@@ -144,7 +144,6 @@ client.on('message', msg => {
             durationComplete = 7000;
         else if(durationComplete <= 100)
             durationComplete = 100;
-        console.log(durationComplete);
         msg.delete(durationComplete);
 
     }
