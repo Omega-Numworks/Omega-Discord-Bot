@@ -23,7 +23,7 @@ client.on('message', msg => {
             if(msg.content.toLowerCase().includes(item)){
                 ForbiddenWordPresent = true;
             }
-        })
+        });
         if(ForbiddenWordPresent){
             msg.channel.send("**FR**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseFR + "\n\n**EN**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseEN);
             return
@@ -32,7 +32,7 @@ client.on('message', msg => {
             if(msg.content.toLowerCase().includes(item)){
                 ForbiddenWordPresent = true;
             }
-        })
+        });
         if(ForbiddenWordPresent){
             msg.reply(config.ShortForbiddenWordsResponse);
             return
@@ -126,7 +126,7 @@ client.on('message', msg => {
     }
 
     if(msg.channel.id === config.Channel){
-        setTimeout(() => {msg.delete(0)}, 2000);
+        setTimeout(() => {msg.delete(0)}, 7000);
     }
 
     if(!msg.content.startsWith(config.Prefix))
