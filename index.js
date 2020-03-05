@@ -4,13 +4,13 @@ const fs = require("fs");
 const yaml = require("yaml");
 const request = require("request")
 const moment = require("moment")
-var ON_DEATH = require('death');
+const ON_DEATH = require('death');
 
 
 // CONFIG
-var ConfigLocation = "config.yaml"
-var config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"))
-var Commands = config.Commands
+const ConfigLocation = "config.yaml"
+const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"))
+const Commands = config.Commands
 
 client.on('ready', () => {
   console.log(`Connected as ${client.user.tag}!`);
@@ -123,6 +123,10 @@ client.on('message', msg => {
 
             }
         })
+    }
+
+    if(msg.channel.id === "685114510259912724"){
+        setTimeout(() => {msg.delete(0)}, 2000);
     }
 
     if(!msg.content.startsWith(config.Prefix))

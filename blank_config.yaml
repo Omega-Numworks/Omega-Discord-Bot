@@ -3,7 +3,7 @@
 # You have to move it to config.yaml
 ####################################
 
-Token : "INSERT HERE THE DISCORD BOT TOKEN"
+Token : ""
 
 Prefix : "!"
 
