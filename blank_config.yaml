@@ -4,8 +4,12 @@
 ####################################
 
 Token : "INSERT HERE THE DISCORD BOT TOKEN"
+Channel : "ID OF CHANNEL OF THE 7S CHANNEL"
 
 Prefix : "!"
+
+DurationMin : 200
+DurationMax : 30000
 
 URL : "https://omega-numworks.github.io/"
 
@@ -24,6 +28,7 @@ ShortForbiddenWords:
 ShortForbiddenWordsResponse : "in english please!"
 
 Omega-Repository : "Omega-Numworks/Omega"
+Numworks-Repository: "numworks/Epsilon"
 
 Commands :
   help :
