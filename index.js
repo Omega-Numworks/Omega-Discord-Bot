@@ -49,7 +49,6 @@ client.on('message', msg => {
         let index = IssueNumberPosition + IssueId.length
         if (!(cloneMsg.charAt(IssueNumberPosition - 1) === "<" && cloneMsg.charAt(index) === ">")) {
 
-            console.log(IssueId);
             let link = config["Omega-Repository"];
             if (IssueId.charAt(IssueId.length - 1) === 'e') {
                 link = config["Numworks-Repository"];
