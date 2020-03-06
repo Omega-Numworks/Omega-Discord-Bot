@@ -11,9 +11,34 @@ const ON_DEATH = require('death');
 const ConfigLocation = "config.yaml";
 const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"));
 const Commands = config.Commands;
+const forbiddenList = [
+    "crypter",
+    "crypté",
+    "cryptage",
+    "cryptation",
+    "encrypter"
+];
+
+let chiffrer = NaN;
+
 
 client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
+    request(
+        {
+            url: "https://chiffrer.info",
+            headers: {
+                "User-Agent": "Omega-Discord-Bot"
+            }
+        },
+        (error, response, body) => {
+            chiffrer = new Discord.RichEmbed()
+                .setURL("https://chiffrer.info")
+                .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
+                .setTimestamp(new Date().getTime())
+                .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
+        }
+    )
 });
 
 client.on('message', msg => {
@@ -38,7 +63,13 @@ client.on('message', msg => {
             return
         }
     }
-    let cloneMsg = msg.content
+    let cloneMsg = msg.content;
+    for (let forbidden in forbiddenList) {
+        if (cloneMsg.includes(forbiddenList[forbidden])) {
+            msg.channel.send(chiffrer);
+            break;
+        }
+    }
     IssueNumberPosition = msg.content.indexOf("#");
     if (IssueNumberPosition > -1 && msg[IssueNumberPosition + 1] !== "<") {
         if (msg.content.substring(IssueNumberPosition + 1).includes(" ")) {
@@ -51,6 +82,7 @@ client.on('message', msg => {
 
             let link = config["Omega-Repository"];
             if (IssueId.charAt(IssueId.length - 1) === 'e') {
+                e
                 link = config["Numworks-Repository"];
             }
             request({
@@ -151,7 +183,9 @@ client.on('message', msg => {
             durationComplete = config.DurationMax;
         else if (durationComplete <= config.DurationMin)
             durationComplete = config.DurationMin;
-        msg.delete(durationComplete);
+        setTimeout(() => {
+            msg.delete(0).catch(reason => console.log("The Message was already destroyed"))
+        }, durationComplete)
 
     }
 
