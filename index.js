@@ -38,7 +38,7 @@ client.on('message', msg => {
             return
         }
     }
-
+    let cloneMsg = msg.content
     IssueNumberPosition = msg.content.indexOf("#");
     if (IssueNumberPosition > -1 && msg[IssueNumberPosition + 1] !== "<") {
         if (msg.content.substring(IssueNumberPosition + 1).includes(" ")) {
@@ -46,83 +46,91 @@ client.on('message', msg => {
         } else {
             IssueId = msg.content.substring(IssueNumberPosition + 1)
         }
+        let index = IssueNumberPosition + IssueId.length
+        if (!(cloneMsg.charAt(IssueNumberPosition - 1) === "<" && cloneMsg.charAt(index) === ">")) {
 
-        request({
-            url: "https://api.github.com/repos/" + config["Omega-Repository"] + "/issues/" + IssueId,
-            headers: {
-                'User-Agent': 'Omega-Discord-Bot'
+            console.log(IssueId);
+            let link = config["Omega-Repository"];
+            if (IssueId.charAt(IssueId.length - 1) === 'e') {
+                link = config["Numworks-Repository"];
             }
-        }, (error, response, body) => {
-            body = JSON.parse(body);
-            if (error)
-                msg.channel.send("ERROR : " + error.toString());
-            if (response.statusCode === 200) {
-                let message = new Discord.RichEmbed()
-                    .setURL(body.html_url)
-                    .setTitle(body.title + " (#" + body.number + ")")
-                    .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
-                    .setDescription(body.body)
-                    .setTimestamp(Date.parse(body.created_at));
-                let AdditionalInformations = "";
-                if (body.state !== "open") {
-                    AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
-                    message.setColor("a30000")
-                } else {
-                    AdditionalInformations += ":white_check_mark: Open\n";
-                    message.setColor("2b2b2b")
+            request({
+                url: "https://api.github.com/repos/" + link + "/issues/" + IssueId,
+                headers: {
+                    'User-Agent': 'Omega-Discord-Bot'
                 }
-                if (body.labels.length !== 0) {
-                    AdditionalInformations += ":label: Labels : ";
-                    body.labels.forEach((item, index) => {
-                        if (index !== 0) {
-                            AdditionalInformations += ", "
-                        }
-                        AdditionalInformations += item.name
-                    });
-                    AdditionalInformations += "\n"
-                }
-                if (body.assignees.length !== 0) {
-                    AdditionalInformations += ":person_frowning: Assigned to ";
-                    body.assignees.forEach((item, index) => {
-                        if (index !== 0) {
-                            AdditionalInformations += ", "
-                        }
-                        AdditionalInformations += item.login
-                    });
-                    AdditionalInformations += "\n"
-                }
-                if (body.locked) {
-                    AdditionalInformations += ":lock: locked\n"
-                }
-                if (body.pull_request !== undefined) {
-                    AdditionalInformations += ":arrows_clockwise: Pull request\n"
-                }
-                if (body.comments !== 0) {
-                    AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
-                }
-                if (IssueId.toLowerCase() === body.number + "c") {
-                    request({
-                        url: body.comments_url,
-                        headers: {
-                            'User-Agent': 'Omega-Discord-Bot'
-                        }
-                    }, (err, resp, bod) => {
-                        bod = JSON.parse(bod);
-                        bod.forEach((item) => {
-                            message.addField("**Answer of** " + item.user.login + " **" + moment(item.created_at).fromNow() + " (" + moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss") + " )**", item.body)
+            }, (error, response, body) => {
+                body = JSON.parse(body);
+                if (error)
+                    msg.channel.send("ERROR : " + error.toString());
+                if (response.statusCode === 200) {
+                    let message = new Discord.RichEmbed()
+                        .setURL(body.html_url)
+                        .setTitle(body.title + " (#" + body.number + ")")
+                        .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
+                        .setDescription(body.body)
+                        .setTimestamp(Date.parse(body.created_at));
+                    let AdditionalInformations = "";
+                    if (body.state !== "open") {
+                        AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
+                        message.setColor("a30000")
+                    } else {
+                        AdditionalInformations += ":white_check_mark: Open\n";
+                        message.setColor("2b2b2b")
+                    }
+                    if (body.labels.length !== 0) {
+                        AdditionalInformations += ":label: Labels : ";
+                        body.labels.forEach((item, index) => {
+                            if (index !== 0) {
+                                AdditionalInformations += ", "
+                            }
+                            AdditionalInformations += item.name
                         });
+                        AdditionalInformations += "\n"
+                    }
+                    if (body.assignees.length !== 0) {
+                        AdditionalInformations += ":person_frowning: Assigned to ";
+                        body.assignees.forEach((item, index) => {
+                            if (index !== 0) {
+                                AdditionalInformations += ", "
+                            }
+                            AdditionalInformations += item.login
+                        });
+                        AdditionalInformations += "\n"
+                    }
+                    if (body.locked) {
+                        AdditionalInformations += ":lock: locked\n"
+                    }
+                    if (body.pull_request !== undefined) {
+                        AdditionalInformations += ":arrows_clockwise: Pull request\n"
+                    }
+                    if (body.comments !== 0) {
+                        AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
+                    }
+                    if (IssueId.toLowerCase() === body.number + "c") {
+                        request({
+                            url: body.comments_url,
+                            headers: {
+                                'User-Agent': 'Omega-Discord-Bot'
+                            }
+                        }, (err, resp, bod) => {
+                            bod = JSON.parse(bod);
+                            bod.forEach((item) => {
+                                message.addField("**Answer of** " + item.user.login + " **" + moment(item.created_at).fromNow() + " (" + moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss") + " )**", item.body)
+                            });
+                            message.addField("Additional informations", AdditionalInformations)
+                                .setFooter(client.user.tag, client.user.avatarURL);
+                            msg.channel.send(message)
+                        })
+                    } else {
                         message.addField("Additional informations", AdditionalInformations)
                             .setFooter(client.user.tag, client.user.avatarURL);
                         msg.channel.send(message)
-                    })
-                } else {
-                    message.addField("Additional informations", AdditionalInformations)
-                        .setFooter(client.user.tag, client.user.avatarURL);
-                    msg.channel.send(message)
-                }
+                    }
 
-            }
-        })
+                }
+            })
+        }
     }
 
     if (msg.channel.id === config.Channel) {
@@ -140,9 +148,9 @@ client.on('message', msg => {
             multiplier = 1000;
         }
         let durationComplete = multiplier * durationInteger;
-        if(durationComplete > config.DurationMax)
+        if (durationComplete > config.DurationMax)
             durationComplete = config.DurationMax;
-        else if(durationComplete <= config.DurationMin)
+        else if (durationComplete <= config.DurationMin)
             durationComplete = config.DurationMin;
         msg.delete(durationComplete);
 

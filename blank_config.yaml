@@ -28,6 +28,7 @@ ShortForbiddenWords:
 ShortForbiddenWordsResponse : "in english please!"
 
 Omega-Repository : "Omega-Numworks/Omega"
+Numworks-Repository: "numworks/Epsilon"
 
 Commands :
   help :
