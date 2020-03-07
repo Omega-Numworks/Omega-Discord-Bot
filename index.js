@@ -283,10 +283,15 @@ client.on('message', msg => {
     } else if (Command === Commands.kemonomimi.input) {
         sendImage(msg, "kemonomimi", "picture");
     } else if (Command === Commands.apod.input) {
-        let message = WithoutPrefix.substr(3, WithoutPrefix.length);
+        let message = WithoutPrefix.substr(4, WithoutPrefix.length);
         if (!moment(message, "YYYY-MM-DD").isValid()) {
             message = "";
         }
+        let s = moment(message, "YYYY-MM-DD");
+        if (s.isAfter(moment.now()))
+            message = "";
+        if (s.isBefore(moment("1995-06-17")))
+            message = "";
         if (message.length > 0) {
             apod(msg, message, false)
             return;
@@ -347,7 +352,8 @@ async function apod(msg, date, defaul) {
 
     let link = 'https://api.nasa.gov/planetary/apod?api_key=' + nasa;
     if (!defaul) {
-        link = link + "&date=" + date.substr(1).trim();
+        date = date.trim().replace(" ", "-").replace(" ", "-").split(" ")[0];
+        link = link + "&date=" + date;
     }
     const data = await (await fetch(link)).json();
     if ((!(data || data.url))) {
