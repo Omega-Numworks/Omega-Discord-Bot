@@ -283,7 +283,15 @@ client.on('message', msg => {
     } else if (Command === Commands.kemonomimi.input) {
         sendImage(msg, "kemonomimi", "picture");
     } else if (Command === Commands.apod.input) {
-        apod(msg);
+        let message = WithoutPrefix.substr(3, WithoutPrefix.length);
+        if (!moment(message, "YYYY-MM-DD").isValid()) {
+            message = "";
+        }
+        if (message.length > 0) {
+            apod(msg, message, false)
+            return;
+        }
+        apod(msg, message, true);
     }
 });
 
@@ -335,8 +343,13 @@ async function fact(msg) {
     msg.reply("Fun fact : " + data.fact)
 }
 
-async function apod(msg) {
-    const data = await (await fetch('https://api.nasa.gov/planetary/apod?api_key=' + nasa)).json();
+async function apod(msg, date, defaul) {
+
+    let link = 'https://api.nasa.gov/planetary/apod?api_key=' + nasa;
+    if (!defaul) {
+        link = link + "&date=" + date.substr(1).trim();
+    }
+    const data = await (await fetch(link)).json();
     if ((!(data || data.url))) {
         return msg.channel.send("an error occured");
     }
