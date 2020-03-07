@@ -75,3 +75,6 @@ Commands:
     owo:
       input: "owo"
       description: "owoify a text"
+    fact:
+      input: "fact"
+      description: "send a fact"

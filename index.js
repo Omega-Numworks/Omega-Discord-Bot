@@ -38,8 +38,8 @@ client.on('ready', () => {
                 .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
                 .setTimestamp(new Date().getTime())
                 .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
-        }
-    )
+        });
+});
 
 client.on('message', msg => {
     if (!msg.channel.name.toLowerCase().includes("fr")) {
@@ -63,7 +63,17 @@ client.on('message', msg => {
             return
         }
     }
+
+
     let cloneMsg = msg.content;
+
+    if (cloneMsg.toLowerCase() === "good bot") {
+        msg.reply("Good human!");
+    }
+    if (cloneMsg.toLowerCase() === "bad bot") {
+        msg.reply("Sorry :(");
+    }
+
     for (let forbidden in forbiddenList) {
         if (cloneMsg.toLowerCase().includes(forbiddenList[forbidden])) {
             msg.channel.send(chiffrer);
@@ -267,6 +277,8 @@ client.on('message', msg => {
             return;
         }
         owoify(msg, message);
+    } else if (Command === Commands.fact.input) {
+        fact(msg);
     }
 });
 
@@ -304,11 +316,20 @@ async function sendImage(msg, action) {
 }
 
 async function owoify(msg, text) {
-    const data = await (await fetch('https://nekos.life/api/v2/owoify?text=' + text)).json();
+    const data = await (await fetch('https://nekos.life/api/v2/owoify?text=' + escape(text))).json();
     if ((!(data || data.owo)))
         return msg.channel.send("an error occured");
     msg.reply(data.owo)
 }
+
+async function fact(msg) {
+    const data = await (await fetch('https://nekos.life/api/v2/fact')).json();
+    if ((!(data || data.fact))) {
+        return msg.channel.send("an error occured");
+    }
+    msg.reply("Fun fact : " + data.fact)
+}
+
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
     client.destroy();
