@@ -32,8 +32,7 @@ client.on('ready', () => {
             headers: {
                 "User-Agent": "Omega-Discord-Bot"
             }
-        },
-        (error, response, body) => {
+        }, (error, response, body) => {
             chiffrer = new Discord.RichEmbed()
                 .setURL("https://chiffrer.info")
                 .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
@@ -43,29 +42,6 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    if (!msg.channel.name.toLowerCase().includes("fr")) {
-        ForbiddenWordPresent = false;
-        config.ForbiddenWords.forEach((item) => {
-            if (msg.content.toLowerCase().includes(item)) {
-                ForbiddenWordPresent = true;
-            }
-        });
-        if (ForbiddenWordPresent) {
-            msg.channel.send("**FR**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseFR + "\n\n**EN**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseEN);
-            return
-        }
-        config.ShortForbiddenWords.forEach((item) => {
-            if (msg.content.toLowerCase().includes(item)) {
-                ForbiddenWordPresent = true;
-            }
-        });
-        if (ForbiddenWordPresent) {
-            msg.reply(config.ShortForbiddenWordsResponse);
-            return
-        }
-    }
-
-
     let cloneMsg = msg.content;
 
     if (cloneMsg.toLowerCase() === "good bot") {
