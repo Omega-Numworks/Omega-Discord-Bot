@@ -12,6 +12,9 @@ const fetch = require("node-fetch");
 const ConfigLocation = "config.yaml";
 const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"));
 const Commands = config.Commands;
+const customs = fs.readFileSync("custom.json", "utf8");
+let customCommandList = new Array();
+let customCommandMap = new Map();
 const nasa = config["NASA_API_KEY"];
 const forbiddenList = [
     "crypter",
@@ -23,9 +26,21 @@ const forbiddenList = [
 
 let chiffrer = NaN;
 
+function loadCommandsFromStorage() {
+    let file = fs.readFileSync("custom.json", "utf8")
+    let commandList = JSON.parse(file);
+    let commandMap = new Map();
+    for (let i = 0; i < commandList.length; i++) {
+        let command = commandList[i];
+        commandMap.set(command.name, command);
+    }
+    return commandMap;
+}
 
 client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
+    customCommandMap = loadCommandsFromStorage();
+
     request(
         {
             url: "https://chiffrer.info",
@@ -144,7 +159,6 @@ client.on('message', msg => {
                             .setFooter(client.user.tag, client.user.avatarURL);
                         msg.channel.send(message)
                     }
-
                 }
             })
         }
@@ -216,7 +230,7 @@ client.on('message', msg => {
         });
         msg.channel.send(response);
     } else if (Command === Commands.hug.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -226,7 +240,7 @@ client.on('message', msg => {
         }
         sendHug(msg, "hug", "hugged");
     } else if (Command === Commands.kiss.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -236,7 +250,7 @@ client.on('message', msg => {
         }
         sendHug(msg, "kiss", "kissed");
     } else if (Command === Commands.cuddle.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -246,7 +260,7 @@ client.on('message', msg => {
         }
         sendHug(msg, "cuddle", "cuddled");
     } else if (Command === Commands.pat.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -256,13 +270,13 @@ client.on('message', msg => {
         }
         sendHug(msg, "pat", "head-patted");
     } else if (Command === Commands.waifu.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
         sendImage(msg, "waifu", "waifu");
     } else if (Command === Commands.feed.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -272,7 +286,7 @@ client.on('message', msg => {
         }
         sendHug(msg, "feed", "fed");
     } else if (Command === Commands.owo.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -283,13 +297,13 @@ client.on('message', msg => {
         }
         owoify(msg, message);
     } else if (Command === Commands.fact.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
         fact(msg);
     } else if (Command === Commands.kemonomimi.input) {
-        if(msg.guild.id !== "685936220395929600"){
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
@@ -312,8 +326,50 @@ client.on('message', msg => {
             return;
         }
         apod(msg, message, true);
+    } else if (Command === "reload") {
+        let i = fs.readFileSync("custom.json", "utf8")
+        customCommandMap = loadCommandsFromStorage();
+        msg.reply("The command list was reloaded")
+    } else if (Command === "custom") {
+        if (!((msg.author.id === "339132422946029569") || (msg.author.id === "171318796433227776"))) {
+            msg.reply("You do not have the permission to perform this command!");
+            return;
+        }
+        let message = WithoutPrefix.trim().substr(7, WithoutPrefix.length).trim().split(" ");
+        let cmd = message.shift().trim();
+        let action = message.join(" ");
+        if (cmd.trim() === "") {
+            msg.reply("You can't create an empty command!")
+            return;
+        }
+        if (action.trim() === "") {
+            msg.reply("You can't create an empty command!")
+            return;
+        }
+        let command = {
+            "name": cmd,
+            "action": action
+        }
+        if (customCommandMap.has(cmd)) {
+            msg.reply("This command already exist.");
+            return;
+        }
+        customCommandMap.set(cmd, command);
+        msg.reply("You successfully registered the " + cmd + " command")
+    } else {
+        if (customCommandMap.has(Command)) {
+            msg.channel.send(customCommandMap.get(Command).action);
+        }
     }
 });
+
+function saveCustomList() {
+    let list = [];
+    for (let key of customCommandMap.keys()) {
+        list.push(customCommandMap.get(key));
+    }
+    fs.writeFileSync("custom.json", JSON.stringify(list), "utf8");
+}
 
 async function sendHug(msg, action, verb) {
     try {
@@ -381,12 +437,13 @@ async function apod(msg, date, defaul) {
     msg.channel.send(answer);
 }
 
-function notAllowed(msg){
+function notAllowed(msg) {
     msg.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
 }
 
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
+    saveCustomList();
     client.destroy();
     process.exit();
 });
