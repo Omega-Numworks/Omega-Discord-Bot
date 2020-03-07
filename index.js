@@ -5,6 +5,7 @@ const yaml = require("yaml");
 const request = require("request");
 const moment = require("moment");
 const ON_DEATH = require('death');
+const fetch = require("node-fetch");
 
 
 // CONFIG
@@ -193,7 +194,8 @@ client.on('message', msg => {
         return;
 
     WithoutPrefix = msg.content.replace(config.Prefix, "");
-    Command = WithoutPrefix.split(" ")[0];
+    Command = WithoutPrefix.split(/ +/)[0];
+    arguments = WithoutPrefix.split(/ +/).shift().toLowerCase();
     if (Command === Commands.help.input) {
         let response = new Discord.RichEmbed()
             .setTitle("Here are the commands you can use with me")
@@ -228,8 +230,31 @@ client.on('message', msg => {
             response.addField(element.name, "Github : " + element.Github + " Discord : " + client.users.find(user => user.id === element.DiscordId).tag)
         });
         msg.channel.send(response);
+    } else if (Command === Commands.hug.input) {
+        if (!msg.mentions.users.size) {
+            msg.reply('Are you alone :( ?')
+            return;
+        }
+        sendHug(msg);
     }
 });
+
+async function sendHug(msg) {
+    try {
+        const user = msg.mentions.users.first();
+        const data = await (await fetch('https://nekos.life/api/v2/img/hug')).json();
+        if ((!(data || data.url)))
+            return msg.channel.send("an error occured");
+        let answer = new Discord.RichEmbed()
+            .setTitle("@" + user.username + "" + " is hugged by @" + msg.author.username + "")
+            .setImage(data.url);
+        msg.channel.send(answer)
+    } catch (e) {
+        console.log(e)
+        return msg.channel.send("an error occured")
+    }
+}
+
 
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
