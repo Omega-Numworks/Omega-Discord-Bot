@@ -287,6 +287,9 @@ client.on('message', msg => {
         if (!moment(message, "YYYY-MM-DD").isValid()) {
             message = "";
         }
+        if (!message.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
+            message = "";
+        }
         let s = moment(message, "YYYY-MM-DD");
         if (s.isAfter(moment.now()))
             message = "";
@@ -352,8 +355,7 @@ async function apod(msg, date, defaul) {
 
     let link = 'https://api.nasa.gov/planetary/apod?api_key=' + nasa;
     if (!defaul) {
-        date = date.trim().replace(" ", "-").replace(" ", "-").split(" ")[0];
-        link = link + "&date=" + date;
+        link = link + "&date=" + date.trim();
     }
     const data = await (await fetch(link)).json();
     if ((!(data || data.url))) {
