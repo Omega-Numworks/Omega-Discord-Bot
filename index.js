@@ -65,7 +65,7 @@ client.on('message', msg => {
     }
     let cloneMsg = msg.content;
     for (let forbidden in forbiddenList) {
-        if (cloneMsg.includes(forbiddenList[forbidden])) {
+        if (cloneMsg.toLowerCase().includes(forbiddenList[forbidden])) {
             msg.channel.send(chiffrer);
             break;
         }
