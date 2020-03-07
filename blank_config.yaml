@@ -63,3 +63,15 @@ Commands:
     cuddle:
       input: "cuddle"
       description: "cuddle someone"
+    pat:
+      input: "pat"
+      description: "pat someone"
+    waifu:
+      input: "waifu"
+      description: "Show a waifu"
+    feed:
+      input: "feed"
+      description: "Show a feed gif"
+    owo:
+      input: "owo"
+      description: "owoify a text"

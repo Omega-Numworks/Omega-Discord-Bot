@@ -193,9 +193,9 @@ client.on('message', msg => {
     if (!msg.content.startsWith(config.Prefix))
         return;
 
-    WithoutPrefix = msg.content.replace(config.Prefix, "");
-    Command = WithoutPrefix.split(/ +/)[0];
-    arguments = WithoutPrefix.split(/ +/).shift().toLowerCase();
+    let WithoutPrefix = msg.content.replace(config.Prefix, "");
+    let Command = WithoutPrefix.split(" ")[0];
+    let commandsargs = WithoutPrefix.split(" ").shift().toLowerCase();
     if (Command === Commands.help.input) {
         let response = new Discord.RichEmbed()
             .setTitle("Here are the commands you can use with me")
@@ -248,6 +248,27 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "cuddle", "cuddled");
+    } else if (Command === Commands.pat.input) {
+        if (!msg.mentions.users.size) {
+            msg.reply('Are you alone :( ?')
+            return;
+        }
+        sendHug(msg, "pat", "head-patted");
+    } else if (Command === Commands.waifu.input) {
+        sendImage(msg, "waifu");
+    } else if (Command === Commands.feed.input) {
+        if (!msg.mentions.users.size) {
+            msg.reply('Are you alone :( ?')
+            return;
+        }
+        sendHug(msg, "feed", "fed");
+    } else if (Command === Commands.owo.input) {
+        let message = WithoutPrefix.substr(3, WithoutPrefix.length);
+        if (message.length === 0) {
+            msg.reply("Send a text :) !")
+            return;
+        }
+        owoify(msg, message);
     }
 });
 
@@ -268,6 +289,28 @@ async function sendHug(msg, action, verb) {
     }
 }
 
+async function sendImage(msg, action) {
+    try {
+        const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
+        if ((!(data || data.url)))
+            return msg.channel.send("an error occured");
+        let answer = new Discord.RichEmbed()
+            .setTitle("Here is your " + action)
+            .setImage(data.url)
+            .addField("Provided by : ", "nekos.life")
+        msg.channel.send(answer)
+    } catch (e) {
+        console.log(e)
+        return msg.channel.send("an error occured")
+    }
+}
+
+async function owoify(msg, text) {
+    const data = await (await fetch('https://nekos.life/api/v2/owoify?text=' + text)).json();
+    if ((!(data || data.owo)))
+        return msg.channel.send("an error occured");
+    msg.reply(data.owo)
+}
 
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
