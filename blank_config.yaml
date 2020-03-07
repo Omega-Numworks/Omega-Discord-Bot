@@ -3,15 +3,17 @@
 # You have to move it to config.yaml
 ####################################
 
-Token : "INSERT HERE THE DISCORD BOT TOKEN"
-Channel : "ID OF CHANNEL OF THE 7S CHANNEL"
+Token: "INSERT HERE THE DISCORD BOT TOKEN"
+Channel: "ID OF CHANNEL OF THE 7S CHANNEL"
 
-Prefix : "!"
+Prefix: "!"
 
-DurationMin : 200
-DurationMax : 30000
+DurationMin: 200
+DurationMax: 30000
 
-URL : "https://omega-numworks.github.io/"
+URL: "https://omega-numworks.github.io/"
+
+NASA_API_KEY: "2w8lmXZvDrqZjm4WiYrJLEGJGEH9BUxESzf4Z6Jc"
 
 ForbiddenWords:
   - "slt"
@@ -25,32 +27,62 @@ ForbiddenWordsResponseEN: "in channels not ending with `-fr`, it is imperative t
 ShortForbiddenWords:
   - "mdr"
 
-ShortForbiddenWordsResponse : "in english please!"
+ShortForbiddenWordsResponse: "in english please!"
 
-Omega-Repository : "Omega-Numworks/Omega"
+Omega-Repository: "Omega-Numworks/Omega"
 Numworks-Repository: "numworks/Epsilon"
 
-Commands :
-  help :
-    input : "help"
-    description : "Return a help"
-  team :
-    input : "team"
-    description : "Return infos about the omega team"
-    file : "team.json"
+Commands:
+  help:
+    input: "help"
+    description: "Return a help"
+  team:
+    input: "team"
+    description: "Return infos about the omega team"
+    file: "team.json"
   repository:
-    input : "repositories"
-    description : "Return the list of the repositories in the Omega project"
-    repository :
-      - url : "https://github.com/Omega-Numworks/Omega"
-        name : "Omega"
-        desc : "Omega main repository"
-      - url : "https://github.com/Omega-Numworks/Omega-Themes"
-        name : "Omega themes"
-        desc : "Omega themes desc"
-      - url : "https://github.com/Omega-Numworks/Omega-CLI-Installer"
-        name : "Omega cli installer"
-        desc : "Omega cli installer desc"
-      - url : "https://github.com/Omega-Numworks/Omega-Design"
-        name : "Omega Design"
-        desc : "Omega design desc"
+    input: "repositories"
+    description: "Return the list of the repositories in the Omega project"
+    repository:
+      - url: "https://github.com/Omega-Numworks/Omega"
+        name: "Omega"
+        desc: "Omega main repository"
+      - url: "https://github.com/Omega-Numworks/Omega-Themes"
+        name: "Omega themes"
+        desc: "Omega themes desc"
+      - url: "https://github.com/Omega-Numworks/Omega-CLI-Installer"
+        name: "Omega cli installer"
+        desc: "Omega cli installer desc"
+      - url: "https://github.com/Omega-Numworks/Omega-Design"
+        name: "Omega Design"
+        desc: "Omega design desc"
+    hug:
+      input: "hug"
+      description: "Hug someone"
+    kiss:
+      input: "kiss"
+      description: "Kiss someone"
+    cuddle:
+      input: "cuddle"
+      description: "cuddle someone"
+    pat:
+      input: "pat"
+      description: "pat someone"
+    waifu:
+      input: "waifu"
+      description: "Show a waifu"
+    feed:
+      input: "feed"
+      description: "Show a feed gif"
+    owo:
+      input: "owo"
+      description: "owoify a text"
+    fact:
+      input: "fact"
+      description: "send a fact"
+    kemonomimi:
+      input: "kemonomimi"
+      description: "send a kemonomimi picture (sfw)"
+    apod:
+      input: "apod"
+      description: "send the NASA Astronomy Picture Of the Day"
