@@ -13,7 +13,7 @@ DurationMax: 30000
 
 URL: "https://omega-numworks.github.io/"
 
-NASA_API_KEY: "2w8lmXZvDrqZjm4WiYrJLEGJGEH9BUxESzf4Z6Jc"
+NASA_API_KEY: "NASA API KEY"
 
 ForbiddenWords:
   - "slt"
