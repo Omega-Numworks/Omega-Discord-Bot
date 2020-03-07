@@ -78,3 +78,6 @@ Commands:
     fact:
       input: "fact"
       description: "send a fact"
+    kemonomimi:
+      input: "kemonomimi"
+      description: "send a kemonomimi picture (sfw)"

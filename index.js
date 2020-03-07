@@ -263,7 +263,7 @@ client.on('message', msg => {
         }
         sendHug(msg, "pat", "head-patted");
     } else if (Command === Commands.waifu.input) {
-        sendImage(msg, "waifu");
+        sendImage(msg, "waifu", "waifu");
     } else if (Command === Commands.feed.input) {
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
@@ -279,6 +279,8 @@ client.on('message', msg => {
         owoify(msg, message);
     } else if (Command === Commands.fact.input) {
         fact(msg);
+    } else if (Command === Commands.kemonomimi.input) {
+        sendImage(msg, "kemonomimi", "picture");
     }
 });
 
@@ -299,13 +301,13 @@ async function sendHug(msg, action, verb) {
     }
 }
 
-async function sendImage(msg, action) {
+async function sendImage(msg, action, text) {
     try {
         const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
         if ((!(data || data.url)))
             return msg.channel.send("an error occured");
         let answer = new Discord.RichEmbed()
-            .setTitle("Here is your " + action)
+            .setTitle("Here is your " + text)
             .setImage(data.url)
             .addField("Provided by : ", "nekos.life")
         msg.channel.send(answer)
