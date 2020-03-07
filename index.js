@@ -12,6 +12,7 @@ const fetch = require("node-fetch");
 const ConfigLocation = "config.yaml";
 const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"));
 const Commands = config.Commands;
+const nasa = config["NASA_API_KEY"];
 const forbiddenList = [
     "crypter",
     "crypté",
@@ -281,6 +282,8 @@ client.on('message', msg => {
         fact(msg);
     } else if (Command === Commands.kemonomimi.input) {
         sendImage(msg, "kemonomimi", "picture");
+    } else if (Command === Commands.apod.input) {
+        apod(msg);
     }
 });
 
@@ -330,6 +333,19 @@ async function fact(msg) {
         return msg.channel.send("an error occured");
     }
     msg.reply("Fun fact : " + data.fact)
+}
+
+async function apod(msg) {
+    const data = await (await fetch('https://api.nasa.gov/planetary/apod?api_key=' + nasa)).json();
+    if ((!(data || data.url))) {
+        return msg.channel.send("an error occured");
+    }
+    let answer = new Discord.RichEmbed()
+        .setTitle("NASA Astronomy Picture of the Day")
+        .setAuthor(data.copyright)
+        .setImage(data.url)
+        .setDescription(data.explanation);
+    msg.channel.send(answer);
 }
 
 ON_DEATH(function (signal, err) {
