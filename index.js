@@ -235,18 +235,30 @@ client.on('message', msg => {
             msg.reply('Are you alone :( ?')
             return;
         }
-        sendHug(msg);
+        sendHug(msg, "hug", "hugged");
+    } else if (Command === Commands.kiss.input) {
+        if (!msg.mentions.users.size) {
+            msg.reply('Are you alone :( ?')
+            return;
+        }
+        sendHug(msg, "kiss", "kissed");
+    } else if (Command === Commands.cuddle.input) {
+        if (!msg.mentions.users.size) {
+            msg.reply('Are you alone :( ?')
+            return;
+        }
+        sendHug(msg, "cuddle", "cuddled");
     }
 });
 
-async function sendHug(msg) {
+async function sendHug(msg, action, verb) {
     try {
         const user = msg.mentions.users.first();
-        const data = await (await fetch('https://nekos.life/api/v2/img/hug')).json();
+        const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
         if ((!(data || data.url)))
             return msg.channel.send("an error occured");
         let answer = new Discord.RichEmbed()
-            .setTitle("@" + user.username + "" + " is hugged by @" + msg.author.username + "")
+            .setTitle("@" + user.username + "" + " is " + verb + " by @" + msg.author.username + "")
             .setImage(data.url)
             .addField("Provided by : ", "nekos.life")
         msg.channel.send(answer)
