@@ -216,38 +216,66 @@ client.on('message', msg => {
         });
         msg.channel.send(response);
     } else if (Command === Commands.hug.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "hug", "hugged");
     } else if (Command === Commands.kiss.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "kiss", "kissed");
     } else if (Command === Commands.cuddle.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "cuddle", "cuddled");
     } else if (Command === Commands.pat.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "pat", "head-patted");
     } else if (Command === Commands.waifu.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         sendImage(msg, "waifu", "waifu");
     } else if (Command === Commands.feed.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "feed", "fed");
     } else if (Command === Commands.owo.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         let message = WithoutPrefix.substr(3, WithoutPrefix.length);
         if (message.length === 0) {
             msg.reply("Send a text :) !")
@@ -255,8 +283,16 @@ client.on('message', msg => {
         }
         owoify(msg, message);
     } else if (Command === Commands.fact.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         fact(msg);
     } else if (Command === Commands.kemonomimi.input) {
+        if(msg.guild.id !== "685936220395929600"){
+            notAllowed(msg);
+            return;
+        }
         sendImage(msg, "kemonomimi", "picture");
     } else if (Command === Commands.apod.input) {
         let message = WithoutPrefix.substr(4, WithoutPrefix.length);
@@ -343,6 +379,10 @@ async function apod(msg, date, defaul) {
         .setImage(data.url)
         .setDescription(data.explanation);
     msg.channel.send(answer);
+}
+
+function notAllowed(msg){
+    msg.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
 }
 
 ON_DEATH(function (signal, err) {
