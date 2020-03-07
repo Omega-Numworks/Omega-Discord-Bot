@@ -40,7 +40,6 @@ client.on('ready', () => {
                 .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
         }
     )
-});
 
 client.on('message', msg => {
     if (!msg.channel.name.toLowerCase().includes("fr")) {
@@ -83,7 +82,6 @@ client.on('message', msg => {
 
             let link = config["Omega-Repository"];
             if (IssueId.charAt(IssueId.length - 1) === 'e') {
-                e
                 link = config["Numworks-Repository"];
             }
             request({
@@ -311,7 +309,6 @@ async function owoify(msg, text) {
         return msg.channel.send("an error occured");
     msg.reply(data.owo)
 }
-
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
     client.destroy();
