@@ -247,7 +247,8 @@ async function sendHug(msg) {
             return msg.channel.send("an error occured");
         let answer = new Discord.RichEmbed()
             .setTitle("@" + user.username + "" + " is hugged by @" + msg.author.username + "")
-            .setImage(data.url);
+            .setImage(data.url)
+            .addField("Provided by : ", "nekos.life")
         msg.channel.send(answer)
     } catch (e) {
         console.log(e)
