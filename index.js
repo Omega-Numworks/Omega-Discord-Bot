@@ -12,6 +12,9 @@ const fetch = require("node-fetch");
 const ConfigLocation = "config.yaml";
 const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"));
 const Commands = config.Commands;
+const customs = fs.readFileSync("custom.json", "utf8");
+let customCommandList = new Array();
+let customCommandMap = new Map();
 const nasa = config["NASA_API_KEY"];
 const forbiddenList = [
     "crypter",
@@ -23,17 +26,28 @@ const forbiddenList = [
 
 let chiffrer = NaN;
 
+function loadCommandsFromStorage() {
+    let file = fs.readFileSync("custom.json", "utf8")
+    let commandList = JSON.parse(file);
+    let commandMap = new Map();
+    for (let i = 0; i < commandList.length; i++) {
+        let command = commandList[i];
+        commandMap.set(command.name, command);
+    }
+    return commandMap;
+}
 
 client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
+    customCommandMap = loadCommandsFromStorage();
+
     request(
         {
             url: "https://chiffrer.info",
             headers: {
                 "User-Agent": "Omega-Discord-Bot"
             }
-        },
-        (error, response, body) => {
+        }, (error, response, body) => {
             chiffrer = new Discord.RichEmbed()
                 .setURL("https://chiffrer.info")
                 .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
@@ -43,29 +57,6 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    if (!msg.channel.name.toLowerCase().includes("fr")) {
-        ForbiddenWordPresent = false;
-        config.ForbiddenWords.forEach((item) => {
-            if (msg.content.toLowerCase().includes(item)) {
-                ForbiddenWordPresent = true;
-            }
-        });
-        if (ForbiddenWordPresent) {
-            msg.channel.send("**FR**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseFR + "\n\n**EN**\n<@" + msg.author.id + ">, " + config.ForbiddenWordsResponseEN);
-            return
-        }
-        config.ShortForbiddenWords.forEach((item) => {
-            if (msg.content.toLowerCase().includes(item)) {
-                ForbiddenWordPresent = true;
-            }
-        });
-        if (ForbiddenWordPresent) {
-            msg.reply(config.ShortForbiddenWordsResponse);
-            return
-        }
-    }
-
-
     let cloneMsg = msg.content;
 
     if (cloneMsg.toLowerCase() === "good bot") {
@@ -168,7 +159,6 @@ client.on('message', msg => {
                             .setFooter(client.user.tag, client.user.avatarURL);
                         msg.channel.send(message)
                     }
-
                 }
             })
         }
@@ -240,38 +230,66 @@ client.on('message', msg => {
         });
         msg.channel.send(response);
     } else if (Command === Commands.hug.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "hug", "hugged");
     } else if (Command === Commands.kiss.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "kiss", "kissed");
     } else if (Command === Commands.cuddle.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "cuddle", "cuddled");
     } else if (Command === Commands.pat.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "pat", "head-patted");
     } else if (Command === Commands.waifu.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         sendImage(msg, "waifu", "waifu");
     } else if (Command === Commands.feed.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         if (!msg.mentions.users.size) {
             msg.reply('Are you alone :( ?')
             return;
         }
         sendHug(msg, "feed", "fed");
     } else if (Command === Commands.owo.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         let message = WithoutPrefix.substr(3, WithoutPrefix.length);
         if (message.length === 0) {
             msg.reply("Send a text :) !")
@@ -279,26 +297,210 @@ client.on('message', msg => {
         }
         owoify(msg, message);
     } else if (Command === Commands.fact.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         fact(msg);
     } else if (Command === Commands.kemonomimi.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
         sendImage(msg, "kemonomimi", "picture");
     } else if (Command === Commands.apod.input) {
         let message = WithoutPrefix.substr(4, WithoutPrefix.length);
         if (!moment(message, "YYYY-MM-DD").isValid()) {
             message = "";
         }
+        if (!message.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
+            message = "";
+        }
         let s = moment(message, "YYYY-MM-DD");
         if (s.isAfter(moment.now()))
             message = "";
-        if (s.isBefore(moment("1995-06-17")))
-            message = "";
+        if (s.isBefore(moment("1995-06-17"))) ;
+        message = "";
         if (message.length > 0) {
             apod(msg, message, false)
             return;
         }
         apod(msg, message, true);
+    } else if (Command === "reload") {
+        customCommandMap = loadCommandsFromStorage();
+        msg.reply("The command list was reloaded")
+    } else if (Command === "custom") {
+        if (!((msg.author.id === "339132422946029569") || (msg.author.id === "171318796433227776"))) {
+            msg.reply("You do not have the permission to perform this command!");
+            return;
+        }
+        let message = WithoutPrefix.trim().substr(7, WithoutPrefix.length).trim().split(" ");
+        let subcommand = message.shift().trim();
+        if (subcommand === "set") {
+            let cmd = message.shift().trim();
+            let action = message.join(" ");
+            if (cmd.trim() === "") {
+                msg.reply("You can't create an empty command!")
+                return;
+            }
+            if (action.trim() === "") {
+                msg.reply("You can't create an empty command!")
+                return;
+            }
+            let command = {
+                "name": cmd,
+                "action": action
+            }
+            if (customCommandMap.has(cmd)) {
+                msg.reply("This command already exist.");
+                return;
+            }
+            customCommandMap.set(cmd, command);
+            msg.reply("You successfully registered the " + cmd + " command")
+        } else if (subcommand === "remove") {
+            let cmd = message.shift().trim();
+            if (!customCommandMap.has(cmd)) {
+                msg.reply("This command does not exist.")
+                return;
+            }
+            customCommandMap.delete(cmd);
+            msg.reply("You successfully removed the " + cmd + " command")
+        } else {
+            let response = new Discord.RichEmbed()
+                .setTitle("Custom Command Help")
+                .setThumbnail(client.user.displayAvatarURL)
+                .setTimestamp(new Date())
+                .setURL(config.URL)
+                .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL)
+                .addField("!custom set [cmd] [action]", "Create a command")
+                .addField("!custom remove [cmd]", "Remove a custom command")
+            msg.channel.send(response);
+        }
+        saveCustomList()
+    } else if (Command === Commands.customs.input) {
+        let response = new Discord.RichEmbed()
+            .setTitle("List of custom commands")
+            .setThumbnail(client.user.displayAvatarURL)
+            .setTimestamp(new Date())
+            .setURL(config.URL)
+            .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
+        let list = [];
+        for (let key of customCommandMap.keys()) {
+            list.push(customCommandMap.get(key));
+        }
+        for (let command of list) {
+            response.addField(config.Prefix + command.name, command.action);
+        }
+        msg.channel.send(response);
+    } else if (Command === Commands.corona.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let user;
+
+        let message = WithoutPrefix.trim().substr(6, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("SRAS-CoV-2 Diagnostic Machine")
+            .setDescription("The probability that **" + user + "** has the SRAS-CoV-2 is **" + random + "%**")
+            .setTimestamp()
+
+        msg.channel.send(answer);
+
+    } else if (Command === Commands.egg.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let user;
+
+        let message = WithoutPrefix.trim().substr(3, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let base = "My Magic Told Me That... **";
+        if (user.toLowerCase() === "quentin") {
+            random = 100
+        }
+        random > 50 ? base = base + user + "** is an egg!" : base = base + user + "** isnt an egg!";
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Egginator")
+            .setDescription(base)
+            .setTimestamp()
+        msg.channel.send(answer);
+    } else if (Command === Commands.drunk.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let user;
+        let message = WithoutPrefix.trim().substr(5, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let base = "My Magic Told Me That... **";
+        if (user.toLowerCase() === "LeGmask".toLowerCase()) {
+            random = 100
+        }
+        random > 50 ? base = base + user + "** is drunk!" : base = base + user + "** isnt drunk!";
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Hips!")
+            .setDescription(base)
+            .setTimestamp()
+        msg.channel.send(answer);
+    } else if (Command === Commands.compatibility.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let message = WithoutPrefix.trim().substr(13, WithoutPrefix.length).trim().split(" ");
+        if (message.length < 2) {
+            msg.reply("You need 2 persons to do so!");
+            return;
+        }
+        if (message.length > 2) {
+            msg.reply("Oh! Naughty you! Only 2 please ;)")
+            return;
+        }
+        let random = Math.floor(Math.random() * 101);
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Love Calculator")
+            .setDescription("**" + message[0] + "** and **" + message[1] + "** are.... **" + random + "%** compatible")
+            .setTimestamp()
+        msg.channel.send(answer)
+    } else {
+        if (customCommandMap.has(Command)) {
+            msg.channel.send(customCommandMap.get(Command).action);
+        }
     }
 });
+
+function saveCustomList() {
+    let list = [];
+    for (let key of customCommandMap.keys()) {
+        list.push(customCommandMap.get(key));
+    }
+    fs.writeFileSync("custom.json", JSON.stringify(list), "utf8");
+}
 
 async function sendHug(msg, action, verb) {
     try {
@@ -352,8 +554,7 @@ async function apod(msg, date, defaul) {
 
     let link = 'https://api.nasa.gov/planetary/apod?api_key=' + nasa;
     if (!defaul) {
-        date = date.trim().replace(" ", "-").replace(" ", "-").split(" ")[0];
-        link = link + "&date=" + date;
+        link = link + "&date=" + date.trim();
     }
     const data = await (await fetch(link)).json();
     if ((!(data || data.url))) {
@@ -367,8 +568,13 @@ async function apod(msg, date, defaul) {
     msg.channel.send(answer);
 }
 
+function notAllowed(msg) {
+    msg.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
+}
+
 ON_DEATH(function (signal, err) {
     console.log("Destroying the bot.");
+    saveCustomList();
     client.destroy();
     process.exit();
 });
