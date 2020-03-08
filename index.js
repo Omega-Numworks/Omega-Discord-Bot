@@ -319,15 +319,14 @@ client.on('message', msg => {
         let s = moment(message, "YYYY-MM-DD");
         if (s.isAfter(moment.now()))
             message = "";
-        if (s.isBefore(moment("1995-06-17")))
-            message = "";
+        if (s.isBefore(moment("1995-06-17"))) ;
+        message = "";
         if (message.length > 0) {
             apod(msg, message, false)
             return;
         }
         apod(msg, message, true);
     } else if (Command === "reload") {
-        let i = fs.readFileSync("custom.json", "utf8")
         customCommandMap = loadCommandsFromStorage();
         msg.reply("The command list was reloaded")
     } else if (Command === "custom") {
@@ -336,26 +335,63 @@ client.on('message', msg => {
             return;
         }
         let message = WithoutPrefix.trim().substr(7, WithoutPrefix.length).trim().split(" ");
-        let cmd = message.shift().trim();
-        let action = message.join(" ");
-        if (cmd.trim() === "") {
-            msg.reply("You can't create an empty command!")
-            return;
+        let subcommand = message.shift().trim();
+        if (subcommand === "set") {
+            let cmd = message.shift().trim();
+            let action = message.join(" ");
+            if (cmd.trim() === "") {
+                msg.reply("You can't create an empty command!")
+                return;
+            }
+            if (action.trim() === "") {
+                msg.reply("You can't create an empty command!")
+                return;
+            }
+            let command = {
+                "name": cmd,
+                "action": action
+            }
+            if (customCommandMap.has(cmd)) {
+                msg.reply("This command already exist.");
+                return;
+            }
+            customCommandMap.set(cmd, command);
+            msg.reply("You successfully registered the " + cmd + " command")
+        } else if (subcommand === "remove") {
+            let cmd = message.shift().trim();
+            if (!customCommandMap.has(cmd)) {
+                msg.reply("This command does not exist.")
+                return;
+            }
+            customCommandMap.delete(cmd);
+            msg.reply("You successfully removed the " + cmd + " command")
+        } else {
+            let response = new Discord.RichEmbed()
+                .setTitle("Custom Command Help")
+                .setThumbnail(client.user.displayAvatarURL)
+                .setTimestamp(new Date())
+                .setURL(config.URL)
+                .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL)
+                .addField("!custom set [cmd] [action]", "Create a command")
+                .addField("!custom remove [cmd]", "Remove a custom command")
+            msg.channel.send(response);
         }
-        if (action.trim() === "") {
-            msg.reply("You can't create an empty command!")
-            return;
+        saveCustomList()
+    } else if (Command === "customs") {
+        let response = new Discord.RichEmbed()
+            .setTitle("List of custom commands")
+            .setThumbnail(client.user.displayAvatarURL)
+            .setTimestamp(new Date())
+            .setURL(config.URL)
+            .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
+        let list = [];
+        for (let key of customCommandMap.keys()) {
+            list.push(customCommandMap.get(key));
         }
-        let command = {
-            "name": cmd,
-            "action": action
+        for (let command of list) {
+            response.addField(config.Prefix + command.name, command.action);
         }
-        if (customCommandMap.has(cmd)) {
-            msg.reply("This command already exist.");
-            return;
-        }
-        customCommandMap.set(cmd, command);
-        msg.reply("You successfully registered the " + cmd + " command")
+        msg.channel.send(response);
     } else {
         if (customCommandMap.has(Command)) {
             msg.channel.send(customCommandMap.get(Command).action);
