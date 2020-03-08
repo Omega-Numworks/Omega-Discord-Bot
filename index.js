@@ -377,7 +377,7 @@ client.on('message', msg => {
             msg.channel.send(response);
         }
         saveCustomList()
-    } else if (Command === "customs") {
+    } else if (Command === Commands.customs.input) {
         let response = new Discord.RichEmbed()
             .setTitle("List of custom commands")
             .setThumbnail(client.user.displayAvatarURL)
@@ -392,6 +392,29 @@ client.on('message', msg => {
             response.addField(config.Prefix + command.name, command.action);
         }
         msg.channel.send(response);
+    } else if (Command === Commands.corona.input) {
+        /*if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }*/
+        let user;
+
+        let message = WithoutPrefix.trim().substr(6, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("SRAS-CoV-2 Diagnostic Machine")
+            .setDescription("The probability that **" + user + "** has the SRAS-CoV-2 is **" + random + "%**")
+            .setTimestamp()
+
+        msg.channel.send(answer);
+
     } else {
         if (customCommandMap.has(Command)) {
             msg.channel.send(customCommandMap.get(Command).action);
