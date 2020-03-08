@@ -98,3 +98,6 @@ Commands:
     drunk:
       input: "drunk"
       description: "Tell if someone is drunk"
+    compatibility:
+      input: "compatibility"
+      description: "Want to check if you're compatible with your SO?"

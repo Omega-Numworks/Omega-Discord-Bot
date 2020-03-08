@@ -466,6 +466,27 @@ client.on('message', msg => {
             .setDescription(base)
             .setTimestamp()
         msg.channel.send(answer);
+    } else if (Command === Commands.compatibility.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let message = WithoutPrefix.trim().substr(13, WithoutPrefix.length).trim().split(" ");
+        if (message.length < 2) {
+            msg.reply("You need 2 persons to do so!");
+            return;
+        }
+        if (message.length > 2) {
+            msg.reply("Oh! Naughty you! Only 2 please ;)")
+            return;
+        }
+        let random = Math.floor(Math.random() * 101);
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Love Calculator")
+            .setDescription("**" + message[0] + "** and **" + message[1] + "** are.... **" + random + "%** compatible")
+            .setTimestamp()
+        msg.channel.send(answer)
     } else {
         if (customCommandMap.has(Command)) {
             msg.channel.send(customCommandMap.get(Command).action);
