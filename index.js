@@ -393,10 +393,10 @@ client.on('message', msg => {
         }
         msg.channel.send(response);
     } else if (Command === Commands.corona.input) {
-        /*if (msg.guild.id !== "685936220395929600") {
+        if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
-        }*/
+        }
         let user;
 
         let message = WithoutPrefix.trim().substr(6, WithoutPrefix.length).trim();
@@ -415,6 +415,57 @@ client.on('message', msg => {
 
         msg.channel.send(answer);
 
+    } else if (Command === Commands.egg.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let user;
+
+        let message = WithoutPrefix.trim().substr(3, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let base = "My Magic Told Me That... **";
+        if (user.toLowerCase() === "quentin") {
+            random = 100
+        }
+        random > 50 ? base = base + user + "** is an egg!" : base = base + user + "** isnt an egg!";
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Egginator")
+            .setDescription(base)
+            .setTimestamp()
+        msg.channel.send(answer);
+    } else if (Command === Commands.drunk.input) {
+        if (msg.guild.id !== "685936220395929600") {
+            notAllowed(msg);
+            return;
+        }
+        let user;
+        let message = WithoutPrefix.trim().substr(5, WithoutPrefix.length).trim();
+        if (message === "") {
+            user = msg.author.username;
+        } else {
+            user = message;
+        }
+
+        let random = Math.floor(Math.random() * 101);
+        let base = "My Magic Told Me That... **";
+        if (user.toLowerCase() === "LeGmask".toLowerCase()) {
+            random = 100
+        }
+        random > 50 ? base = base + user + "** is drunk!" : base = base + user + "** isnt drunk!";
+        let answer = new Discord.RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Hips!")
+            .setDescription(base)
+            .setTimestamp()
+        msg.channel.send(answer);
     } else {
         if (customCommandMap.has(Command)) {
             msg.channel.send(customCommandMap.get(Command).action);
