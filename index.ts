@@ -1,4 +1,4 @@
-import { Client, RichEmbed, Message, RichEmbedOptions } from 'discord.js';
+import { Client, RichEmbed, Message } from 'discord.js';
 const client = new Client();
 
 import fs from 'fs'
@@ -229,43 +229,38 @@ client.on('message', async (message: Message) => {
         customCommandMap = loadCommandsFromStorage();
         message.reply("The command list was reloaded")
     } else if (command === "custom") {
-        if (!((msg.author.id === "339132422946029569") || (msg.author.id === "171318796433227776"))) {
-            msg.reply("You do not have the permission to perform this command!");
+        if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776")) {
+            message.reply("You do not have the permission to perform this command!");
             return;
         }
-        let message = WithoutPrefix.trim().substr(7, WithoutPrefix.length).trim().split(" ");
-        let subcommand = message.shift().trim();
+        
+        const [subcommand, cmd, ...action] = args
         if (subcommand === "set") {
-            let cmd = message.shift().trim();
-            let action = message.join(" ");
-            if (cmd.trim() === "") {
-                msg.reply("You can't create an empty command!")
-                return;
+            const actionString: string = action.join(" ");
+            
+            if (cmd === "" || actionString === "") {
+                return message.reply("You can't create an empty command!")
             }
-            if (action.trim() === "") {
-                msg.reply("You can't create an empty command!")
-                return;
-            }
+            
             let command = {
                 "name": cmd,
-                "action": action
+                action
             }
+
             if (customCommandMap.has(cmd)) {
-                msg.reply("This command already exist.");
-                return;
+                return message.reply("This command already exist."); 
             }
+
             customCommandMap.set(cmd, command);
-            msg.reply("You successfully registered the " + cmd + " command")
+            return message.reply(`You successfully registered the ${cmd} command`)
+        
         } else if (subcommand === "remove") {
-            let cmd = message.shift().trim();
-            if (!customCommandMap.has(cmd)) {
-                msg.reply("This command does not exist.")
-                return;
-            }
+            if (!customCommandMap.has(cmd)) return message.reply("This command does not exist.")
+            
             customCommandMap.delete(cmd);
-            msg.reply("You successfully removed the " + cmd + " command")
+            message.reply(`You successfully removed the ${cmd} command`)
         } else {
-            let response = new RichEmbed()
+            const response = new RichEmbed()
                 .setTitle("Custom Command Help")
                 .setThumbnail(client.user.displayAvatarURL)
                 .setTimestamp(new Date())
@@ -273,119 +268,24 @@ client.on('message', async (message: Message) => {
                 .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL)
                 .addField("!custom set [cmd] [action]", "Create a command")
                 .addField("!custom remove [cmd]", "Remove a custom command")
-            msg.channel.send(response);
+            message.channel.send(response);
         }
         saveCustomCommands()
     } else if (command === Commands.customs.input) {
-        let response = new RichEmbed()
+        const response = new RichEmbed()
             .setTitle("List of custom commands")
             .setThumbnail(client.user.displayAvatarURL)
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        let list = [];
+        const list = [];
         for (let key of customCommandMap.keys()) {
             list.push(customCommandMap.get(key));
         }
         for (let command of list) {
-            response.addField(config.Prefix + command.name, command.action);
+            response.addField(`${config.Prefix}${command.name}`, command.action);
         }
-        msg.channel.send(response);
-    } else if (command === Commands.corona.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        let user;
-
-        let message = WithoutPrefix.trim().substr(6, WithoutPrefix.length).trim();
-        if (message === "") {
-            user = msg.author.username;
-        } else {
-            user = message;
-        }
-
-        let random = Math.floor(Math.random() * 101);
-        let answer = new RichEmbed()
-            .setColor("#0099ff")
-            .setTitle("SRAS-CoV-2 Diagnostic Machine")
-            .setDescription("The probability that **" + user + "** has the SRAS-CoV-2 is **" + random + "%**")
-            .setTimestamp()
-
-        msg.channel.send(answer);
-
-    } else if (command === Commands.egg.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        let user;
-
-        let message = WithoutPrefix.trim().substr(3, WithoutPrefix.length).trim();
-        if (message === "") {
-            user = msg.author.username;
-        } else {
-            user = message;
-        }
-
-        let random = Math.floor(Math.random() * 101);
-        let base = "My Magic Told Me That... **";
-        if (user.toLowerCase() === "quentin") {
-            random = 100
-        }
-        random > 50 ? base = base + user + "** is an egg!" : base = base + user + "** isnt an egg!";
-        let answer = new RichEmbed()
-            .setColor("#0099ff")
-            .setTitle("Egginator")
-            .setDescription(base)
-            .setTimestamp()
-        msg.channel.send(answer);
-    } else if (command === Commands.drunk.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        let user;
-        let message = WithoutPrefix.trim().substr(5, WithoutPrefix.length).trim();
-        if (message === "") {
-            user = msg.author.username;
-        } else {
-            user = message;
-        }
-
-        let random = Math.floor(Math.random() * 101);
-        let base = "My Magic Told Me That... **";
-        if (user.toLowerCase() === "LeGmask".toLowerCase()) {
-            random = 100
-        }
-        random > 50 ? base = base + user + "** is drunk!" : base = base + user + "** isnt drunk!";
-        let answer = new RichEmbed()
-            .setColor("#0099ff")
-            .setTitle("Hips!")
-            .setDescription(base)
-            .setTimestamp()
-        msg.channel.send(answer);
-    } else if (command === Commands.compatibility.input) {
-        if (message.guild.id !== "685936220395929600") {
-            notAllowed(message);
-            return;
-        }
-        let message = withoutPrefix.trim().substr(13, withoutPrefix.length).trim().split(" ");
-        if (message.length < 2) {
-            message.reply("You need 2 persons to do so!");
-            return;
-        }
-        if (message.length > 2) {
-            message.reply("Oh! Naughty you! Only 2 please ;)")
-            return;
-        }
-        let random = Math.floor(Math.random() * 101);
-        let answer = new RichEmbed()
-            .setColor("#0099ff")
-            .setTitle("Love Calculator")
-            .setDescription("**" + message[0] + "** and **" + message[1] + "** are.... **" + random + "%** compatible")
-            .setTimestamp()
-        msg.channel.send(answer)
+        message.channel.send(response);
     } else {
         if (customCommandMap.has(command)) {
             message.channel.send(customCommandMap.get(command).action);
@@ -441,7 +341,68 @@ client.on('message', async (message: Message) => {
         message.reply(`Fun fact : ${fact}`)
     } else if (command === Commands.kemonomimi.input) {
         return sendImage(message, "kemonomimi", "picture");
-    }
+    } else if (command === Commands.corona.input) {
+
+        const user = args.join(' ') || message.author.username
+
+        const random = Math.floor(Math.random() * 101);
+        const answer = new RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("SRAS-CoV-2 Diagnostic Machine")
+            .setDescription(`The probability that **${user}** has the SRAS-CoV-2 is **${random}%**`)
+            .setTimestamp()
+
+        message.channel.send(answer);
+
+    } else if (command === Commands.egg.input) {
+        const user = args.join(' ') || message.author.username
+
+        const random = user.toLowerCase() === "quentin" ? 100 : Math.floor(Math.random() * 101);
+        const base = "My Magic Told Me That... **";
+
+        const end = random > 50 ? "** is an egg!" : "** isnt an egg!";
+
+        const answer = `${base}${user}${end}`
+
+        const embed = new RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Egginator")
+            .setDescription(answer)
+            .setTimestamp()
+        message.channel.send(embed);
+    } else if (command === Commands.drunk.input) {
+        const user = args.join(' ') || message.author.username
+
+
+        const random = user.toLowerCase() === "legmask" ? 100 : Math.floor(Math.random() * 101);
+        
+        const base = "My Magic Told Me That... **";
+        const end = random > 50 ? "** is drunk!" : "** isnt drunk!";
+        const answer = `${base}${user}${end}`
+
+        const embed = new RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Hips!")
+            .setDescription(base)
+            .setTimestamp()
+        message.channel.send(embed);
+    } else if (command === Commands.compatibility.input) {
+        if (args.length < 2) {
+            return message.reply("You need 2 persons to do so!");
+        }
+
+        if (args.length > 2) {
+            return message.reply("Oh! Naughty you! Only 2 please ;)")
+        }
+
+        const random = Math.floor(Math.random() * 101);
+        const answer = new RichEmbed()
+            .setColor("#0099ff")
+            .setTitle("Love Calculator")
+            .setDescription(`**${args[0]}** and **${args[1]}** are.... **${random}%** compatible`)
+            .setTimestamp()
+        message.channel.send(answer)
+    } 
 
 });
 
@@ -450,7 +411,7 @@ function saveCustomCommands() {
     for (const key of customCommandMap.keys()) {
         list.push(customCommandMap.get(key));
     }
-    fs.writeFileSync("custom.json", JSON.stringify(list), "utf8");
+    fs.writeFileSync("customCommands.json", JSON.stringify(list), "utf8");
 }
 
 async function sendInteraction(message: Message, action: string, verb: string) {
