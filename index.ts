@@ -59,92 +59,82 @@ client.on('message', async (message: Message) => {
 
 
     const issuePosition: number = messageContent.indexOf("#");
+    let issueID;
     if (issuePosition > -1 && messageContent[issuePosition + 1] !== "<") {
         if (messageContent.substring(issuePosition + 1).includes(" ")) {
-            IssueId = messageContent.substring(issuePosition + 1).split(" ")[0]
+            issueID = messageContent.substring(issuePosition + 1).split(" ")[0]
         } else {
-            IssueId = messageContent.substring(issuePosition + 1)
+            issueID = messageContent.substring(issuePosition + 1)
         }
-        let index = issuePosition + IssueId.length
-        if (!(cloneMsg.charAt(issuePosition - 1) === "<" && cloneMsg.charAt(index) === ">")) {
+        let index = issuePosition + issueID.length
+        if (!(messageContent.charAt(issuePosition - 1) === "<" && messageContent.charAt(index) === ">")) {
 
             let link = config["Omega-Repository"];
-            if (IssueId.charAt(IssueId.length - 1) === 'e') {
+            if (issueID.charAt(issueID.length - 1) === 'e') {
                 link = config["Numworks-Repository"];
             }
-            const { body } = await axios.get(`https://api.github.com/repos/${link}/issues/${IssueId}`, {
-                'User-Agent': 'Omega-Discord-Bot'
-            })
-                ; ((error, response, body) => {
-                    body = JSON.parse(body);
-                    if (error)
-                        message.channel.send("ERROR : " + error.toString());
-                    if (response.statusCode === 200) {
-                        let embed = new RichEmbed()
-                            .setURL(body.html_url)
-                            .setTitle(body.title + " (#" + body.number + ")")
-                            .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
-                            .setDescription(body.body)
-                            .setTimestamp(Date.parse(body.created_at));
-                        let AdditionalInformations = "";
-                        if (body.state !== "open") {
-                            AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
-                            embed.setColor("a30000")
-                        } else {
-                            AdditionalInformations += ":white_check_mark: Open\n";
-                            embed.setColor("2b2b2b")
+
+            const data = await axios.get(`https://api.github.com/repos/${link}/issues/${issueID}`)
+                .catch(err => message.channel.send("ERROR : " + err.toString())); 
+                
+            const body = data.body             
+            const embed = new RichEmbed()
+                .setURL(body.html_url)
+                .setTitle(body.title + " (#" + body.number + ")")
+                .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
+                .setDescription(body.body)
+                .setTimestamp(Date.parse(body.created_at));
+                let AdditionalInformations = "";
+                if (body.state !== "open") {
+                    AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
+                    embed.setColor("a30000")
+                } else {
+                    AdditionalInformations += ":white_check_mark: Open\n";
+                    embed.setColor("2b2b2b")
+                }
+                if (body.labels.length !== 0) {
+                    AdditionalInformations += ":label: Labels : ";
+                    body.labels.forEach((item, index) => {
+                        if (index !== 0) {
+                            AdditionalInformations += ", "
                         }
-                        if (body.labels.length !== 0) {
-                            AdditionalInformations += ":label: Labels : ";
-                            body.labels.forEach((item, index) => {
-                                if (index !== 0) {
-                                    AdditionalInformations += ", "
-                                }
-                                AdditionalInformations += item.name
-                            });
-                            AdditionalInformations += "\n"
+                        AdditionalInformations += item.name
+                    });
+                    AdditionalInformations += "\n"
+                }
+                if (body.assignees.length !== 0) {
+                    AdditionalInformations += ":person_frowning: Assigned to ";
+                    body.assignees.forEach((item, index) => {
+                        if (index !== 0) {
+                            AdditionalInformations += ", "
                         }
-                        if (body.assignees.length !== 0) {
-                            AdditionalInformations += ":person_frowning: Assigned to ";
-                            body.assignees.forEach((item, index) => {
-                                if (index !== 0) {
-                                    AdditionalInformations += ", "
-                                }
-                                AdditionalInformations += item.login
-                            });
-                            AdditionalInformations += "\n"
-                        }
-                        if (body.locked) {
-                            AdditionalInformations += ":lock: locked\n"
-                        }
-                        if (body.pull_request !== undefined) {
-                            AdditionalInformations += ":arrows_clockwise: Pull request\n"
-                        }
-                        if (body.comments !== 0) {
-                            AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
-                        }
-                        if (IssueId.toLowerCase() === body.number + "c") {
-                            request({
-                                url: body.comments_url,
-                                headers: {
-                                    'User-Agent': 'Omega-Discord-Bot'
-                                }
-                            }, (err, resp, bod) => {
-                                bod = JSON.parse(bod);
-                                bod.forEach((item) => {
-                                    message.addField("**Answer of** " + item.user.login + " **" + moment(item.created_at).fromNow() + " (" + moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss") + " )**", item.body)
-                                });
-                                embed.addField("Additional informations", AdditionalInformations)
-                                    .setFooter(client.user.tag, client.user.avatarURL);
-                                message.channel.send(embed)
-                            })
-                        } else {
-                            embed.addField("Additional informations", AdditionalInformations)
-                                .setFooter(client.user.tag, client.user.avatarURL);
-                            message.channel.send(embed)
-                        }
-                    }
-                })
+                        AdditionalInformations += item.login
+                    });
+                    AdditionalInformations += "\n"
+                }
+                if (body.locked) {
+                    AdditionalInformations += ":lock: locked\n"
+                }
+                if (body.pull_request !== undefined) {
+                    AdditionalInformations += ":arrows_clockwise: Pull request\n"
+                }
+                if (body.comments !== 0) {
+                    AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
+                }
+                if (issueID.toLowerCase() === body.number + "c") {
+                    const resp = await axios.get(body.comments_url)
+                    const body = resp.body
+                    body.forEach((item) => {
+                        embed.addField(`**Answer of**${item.user.login}** ${moment(item.created_at).fromNow()} (${moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss")})**`, item.body)
+                    });
+                    embed.addField("Additional informations", AdditionalInformations)
+                        .setFooter(client.user.tag, client.user.avatarURL);
+                    message.channel.send(embed)
+                } else {
+                    embed.addField("Additional informations", AdditionalInformations)
+                        .setFooter(client.user.tag, client.user.avatarURL);
+                    message.channel.send(embed)
+                }
         }
     }
 
