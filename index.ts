@@ -1,22 +1,22 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
-const fs = require("fs");
-const yaml = require("yaml");
-const request = require("request");
-const moment = require("moment");
-const ON_DEATH = require('death');
-const fetch = require("node-fetch");
+import { Client, RichEmbed, Message } from 'discord.js';
+const client = new Client();
+
+import fs from 'fs'
+import axios from "axios";
+
+import yaml from "yaml";
+
+import moment from "moment";
+import ON_DEATH from 'death';
 
 
 // CONFIG
-const ConfigLocation = "config.yaml";
-const config = yaml.parse(fs.readFileSync(ConfigLocation, "utf8"));
+const config = yaml.parse(fs.readFileSync("config.yaml", "utf8"));
 const Commands = config.Commands;
-const customs = fs.readFileSync("custom.json", "utf8");
-let customCommandList = new Array();
-let customCommandMap = new Map();
+let customCommandMap = loadCommandsFromStorage();
 const nasa = config["NASA_API_KEY"];
-const forbiddenList = [
+
+const forbiddenList: string[] = [
     "crypter",
     "crypté",
     "cryptage",
@@ -24,12 +24,16 @@ const forbiddenList = [
     "encrypter"
 ];
 
-let chiffrer = NaN;
+const chiffrer: RichEmbed = new RichEmbed()
+    .setURL("https://chiffrer.info")
+    .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
+    .setTimestamp(new Date().getTime())
+    .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
 
 function loadCommandsFromStorage() {
-    let file = fs.readFileSync("custom.json", "utf8")
-    let commandList = JSON.parse(file);
-    let commandMap = new Map();
+    const file = fs.readFileSync("custom.json", "utf8")
+    const commandList = JSON.parse(file);
+    const commandMap = new Map();
     for (let i = 0; i < commandList.length; i++) {
         let command = commandList[i];
         commandMap.set(command.name, command);
@@ -39,64 +43,45 @@ function loadCommandsFromStorage() {
 
 client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
-    customCommandMap = loadCommandsFromStorage();
-
-    request(
-        {
-            url: "https://chiffrer.info",
-            headers: {
-                "User-Agent": "Omega-Discord-Bot"
-            }
-        }, (error, response, body) => {
-            chiffrer = new Discord.RichEmbed()
-                .setURL("https://chiffrer.info")
-                .setAuthor("La Langue Française", "https://chiffrer.info/wp-content/uploads/2016/07/ic_lock_outline_black_48dp_2x.png", "https://chiffrer.info")
-                .setTimestamp(new Date().getTime())
-                .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
-        });
 });
 
-client.on('message', msg => {
-    let cloneMsg = msg.content;
+client.on('message', async (message: Message) => {
+    const messageContent = message.content
 
-    if (cloneMsg.toLowerCase() === "good bot") {
-        msg.reply("Good human!");
-    }
-    if (cloneMsg.toLowerCase() === "bad bot") {
-        msg.reply("Sorry :(");
-    }
+    if (messageContent.toLowerCase() === "good bot") return message.reply("Good human!");
+    if (messageContent.toLowerCase() === "bad bot") return message.reply("Sorry :(");
 
     for (let forbidden in forbiddenList) {
-        if (cloneMsg.toLowerCase().includes(forbiddenList[forbidden])) {
-            msg.channel.send(chiffrer);
+        if (messageContent.toLowerCase().includes(forbiddenList[forbidden])) {
+            message.channel.send(chiffrer);
             break;
         }
     }
-    IssueNumberPosition = msg.content.indexOf("#");
-    if (IssueNumberPosition > -1 && msg[IssueNumberPosition + 1] !== "<") {
-        if (msg.content.substring(IssueNumberPosition + 1).includes(" ")) {
-            IssueId = msg.content.substring(IssueNumberPosition + 1).split(" ")[0]
+
+
+    const issuePosition: number = messageContent.indexOf("#");
+    if (issuePosition > -1 && messageContent[issuePosition + 1] !== "<") {
+        if (messageContent.substring(issuePosition + 1).includes(" ")) {
+            IssueId = messageContent.substring(issuePosition + 1).split(" ")[0]
         } else {
-            IssueId = msg.content.substring(IssueNumberPosition + 1)
+            IssueId = messageContent.substring(issuePosition + 1)
         }
-        let index = IssueNumberPosition + IssueId.length
-        if (!(cloneMsg.charAt(IssueNumberPosition - 1) === "<" && cloneMsg.charAt(index) === ">")) {
+        let index = issuePosition + IssueId.length
+        if (!(cloneMsg.charAt(issuePosition - 1) === "<" && cloneMsg.charAt(index) === ">")) {
 
             let link = config["Omega-Repository"];
             if (IssueId.charAt(IssueId.length - 1) === 'e') {
                 link = config["Numworks-Repository"];
             }
-            request({
-                url: "https://api.github.com/repos/" + link + "/issues/" + IssueId,
-                headers: {
+            const { body } = await axios.get(`https://api.github.com/repos/${link}/issues/${IssueId}`, {
                     'User-Agent': 'Omega-Discord-Bot'
-                }
-            }, (error, response, body) => {
+            })
+            ;((error, response, body) => {
                 body = JSON.parse(body);
                 if (error)
-                    msg.channel.send("ERROR : " + error.toString());
+                    message.channel.send("ERROR : " + error.toString());
                 if (response.statusCode === 200) {
-                    let message = new Discord.RichEmbed()
+                    let embed = new RichEmbed()
                         .setURL(body.html_url)
                         .setTitle(body.title + " (#" + body.number + ")")
                         .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
@@ -105,10 +90,10 @@ client.on('message', msg => {
                     let AdditionalInformations = "";
                     if (body.state !== "open") {
                         AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
-                        message.setColor("a30000")
+                        embed.setColor("a30000")
                     } else {
                         AdditionalInformations += ":white_check_mark: Open\n";
-                        message.setColor("2b2b2b")
+                        embed.setColor("2b2b2b")
                     }
                     if (body.labels.length !== 0) {
                         AdditionalInformations += ":label: Labels : ";
@@ -164,9 +149,9 @@ client.on('message', msg => {
         }
     }
 
-    if (msg.channel.id === config.Channel) {
+    if (message.channel.id === config.Channel) {
 
-        let m = msg.toString().split(" ")[0].trim();
+        let m = messageContent.toString().split(" ")[0].trim();
         let lastChar = m.charAt(m.length - 1);
         let multiplier = 1;
         if (lastChar.toUpperCase() === 'S') {
@@ -189,14 +174,13 @@ client.on('message', msg => {
 
     }
 
-    if (!msg.content.startsWith(config.Prefix))
-        return;
+    if (!messageContent.startsWith(config.Prefix)) return
 
-    let WithoutPrefix = msg.content.replace(config.Prefix, "");
-    let Command = WithoutPrefix.split(" ")[0];
-    let commandsargs = WithoutPrefix.split(" ").shift().toLowerCase();
-    if (Command === Commands.help.input) {
-        let response = new Discord.RichEmbed()
+    const withoutPrefix = messageContent.replace(config.Prefix, "");
+    const [command, ...args] = withoutPrefix.toLocaleLowerCase().trim().split(/\s+/)
+
+    if (command === Commands.help.input) {
+        let response = new RichEmbed()
             .setTitle("Here are the commands you can use with me")
             .setThumbnail(client.user.displayAvatarURL)
             .setTimestamp(new Date())
@@ -207,8 +191,8 @@ client.on('message', msg => {
             response.addField(config.Prefix + item.input, item.description)
         }
         msg.channel.send(response);
-    } else if (Command === Commands.repository.input) {
-        let response = new Discord.RichEmbed()
+    } else if (command === Commands.repository.input) {
+        let response = new RichEmbed()
             .setTitle("Here are the repositories of the omega project")
             .setTimestamp(new Date())
             .setURL(config.URL)
@@ -218,8 +202,8 @@ client.on('message', msg => {
             response.addField(item.name, item.desc + " (" + item.url + ")")
         }
         msg.channel.send(response);
-    } else if (Command === Commands.team.input) {
-        let response = new Discord.RichEmbed()
+    } else if (command === Commands.team.input) {
+        let response = new RichEmbed()
             .setTitle("Here are the people who develop the omega project")
             .setTimestamp(new Date())
             .setURL(config.URL)
@@ -229,7 +213,7 @@ client.on('message', msg => {
             response.addField(element.name, "Github : " + element.Github + " Discord : " + client.users.find(user => user.id === element.DiscordId).tag)
         });
         msg.channel.send(response);
-    } else if (Command === Commands.hug.input) {
+    } else if (command === Commands.hug.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -239,7 +223,7 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "hug", "hugged");
-    } else if (Command === Commands.kiss.input) {
+    } else if (command === Commands.kiss.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -249,7 +233,7 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "kiss", "kissed");
-    } else if (Command === Commands.cuddle.input) {
+    } else if (command === Commands.cuddle.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -259,7 +243,7 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "cuddle", "cuddled");
-    } else if (Command === Commands.pat.input) {
+    } else if (command === Commands.pat.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -269,13 +253,13 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "pat", "head-patted");
-    } else if (Command === Commands.waifu.input) {
+    } else if (command === Commands.waifu.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
         sendImage(msg, "waifu", "waifu");
-    } else if (Command === Commands.feed.input) {
+    } else if (command === Commands.feed.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -285,7 +269,7 @@ client.on('message', msg => {
             return;
         }
         sendHug(msg, "feed", "fed");
-    } else if (Command === Commands.owo.input) {
+    } else if (command === Commands.owo.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -296,20 +280,20 @@ client.on('message', msg => {
             return;
         }
         owoify(msg, message);
-    } else if (Command === Commands.fact.input) {
+    } else if (command === Commands.fact.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
         fact(msg);
-    } else if (Command === Commands.kemonomimi.input) {
+    } else if (command === Commands.kemonomimi.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
         }
         sendImage(msg, "kemonomimi", "picture");
-    } else if (Command === Commands.apod.input) {
-        let message = WithoutPrefix.substr(4, WithoutPrefix.length);
+    } else if (command === Commands.apod.input) {
+        let message = withoutPrefix.substr(4, withoutPrefix.length);
         if (!moment(message, "YYYY-MM-DD").isValid()) {
             message = "";
         }
@@ -319,17 +303,17 @@ client.on('message', msg => {
         let s = moment(message, "YYYY-MM-DD");
         if (s.isAfter(moment.now()))
             message = "";
-        if (s.isBefore(moment("1995-06-17"))) ;
+        if (s.isBefore(moment("1995-06-17")));
         message = "";
         if (message.length > 0) {
             apod(msg, message, false)
             return;
         }
         apod(msg, message, true);
-    } else if (Command === "reload") {
+    } else if (command === "reload") {
         customCommandMap = loadCommandsFromStorage();
         msg.reply("The command list was reloaded")
-    } else if (Command === "custom") {
+    } else if (command === "custom") {
         if (!((msg.author.id === "339132422946029569") || (msg.author.id === "171318796433227776"))) {
             msg.reply("You do not have the permission to perform this command!");
             return;
@@ -366,7 +350,7 @@ client.on('message', msg => {
             customCommandMap.delete(cmd);
             msg.reply("You successfully removed the " + cmd + " command")
         } else {
-            let response = new Discord.RichEmbed()
+            let response = new RichEmbed()
                 .setTitle("Custom Command Help")
                 .setThumbnail(client.user.displayAvatarURL)
                 .setTimestamp(new Date())
@@ -377,8 +361,8 @@ client.on('message', msg => {
             msg.channel.send(response);
         }
         saveCustomList()
-    } else if (Command === Commands.customs.input) {
-        let response = new Discord.RichEmbed()
+    } else if (command === Commands.customs.input) {
+        let response = new RichEmbed()
             .setTitle("List of custom commands")
             .setThumbnail(client.user.displayAvatarURL)
             .setTimestamp(new Date())
@@ -392,7 +376,7 @@ client.on('message', msg => {
             response.addField(config.Prefix + command.name, command.action);
         }
         msg.channel.send(response);
-    } else if (Command === Commands.corona.input) {
+    } else if (command === Commands.corona.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -407,7 +391,7 @@ client.on('message', msg => {
         }
 
         let random = Math.floor(Math.random() * 101);
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setColor("#0099ff")
             .setTitle("SRAS-CoV-2 Diagnostic Machine")
             .setDescription("The probability that **" + user + "** has the SRAS-CoV-2 is **" + random + "%**")
@@ -415,7 +399,7 @@ client.on('message', msg => {
 
         msg.channel.send(answer);
 
-    } else if (Command === Commands.egg.input) {
+    } else if (command === Commands.egg.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -435,13 +419,13 @@ client.on('message', msg => {
             random = 100
         }
         random > 50 ? base = base + user + "** is an egg!" : base = base + user + "** isnt an egg!";
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setColor("#0099ff")
             .setTitle("Egginator")
             .setDescription(base)
             .setTimestamp()
         msg.channel.send(answer);
-    } else if (Command === Commands.drunk.input) {
+    } else if (command === Commands.drunk.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -460,13 +444,13 @@ client.on('message', msg => {
             random = 100
         }
         random > 50 ? base = base + user + "** is drunk!" : base = base + user + "** isnt drunk!";
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setColor("#0099ff")
             .setTitle("Hips!")
             .setDescription(base)
             .setTimestamp()
         msg.channel.send(answer);
-    } else if (Command === Commands.compatibility.input) {
+    } else if (command === Commands.compatibility.input) {
         if (msg.guild.id !== "685936220395929600") {
             notAllowed(msg);
             return;
@@ -481,17 +465,20 @@ client.on('message', msg => {
             return;
         }
         let random = Math.floor(Math.random() * 101);
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setColor("#0099ff")
             .setTitle("Love Calculator")
             .setDescription("**" + message[0] + "** and **" + message[1] + "** are.... **" + random + "%** compatible")
             .setTimestamp()
         msg.channel.send(answer)
     } else {
-        if (customCommandMap.has(Command)) {
-            msg.channel.send(customCommandMap.get(Command).action);
+        if (customCommandMap.has(command)) {
+            message.channel.send(customCommandMap.get(command).action);
         }
     }
+
+    /* Guild Commands */
+    /* hug, kiss, cuddle, pat, waifu, feed, owo, fact, kemonomimi, corona, egg, drunk, compat*/
 });
 
 function saveCustomList() {
@@ -508,7 +495,7 @@ async function sendHug(msg, action, verb) {
         const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
         if ((!(data || data.url)))
             return msg.channel.send("an error occured");
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setTitle("@" + user.username + "" + " is " + verb + " by @" + msg.author.username + "")
             .setImage(data.url)
             .addField("Provided by : ", "nekos.life")
@@ -524,7 +511,7 @@ async function sendImage(msg, action, text) {
         const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
         if ((!(data || data.url)))
             return msg.channel.send("an error occured");
-        let answer = new Discord.RichEmbed()
+        let answer = new RichEmbed()
             .setTitle("Here is your " + text)
             .setImage(data.url)
             .addField("Provided by : ", "nekos.life")
@@ -560,7 +547,7 @@ async function apod(msg, date, defaul) {
     if ((!(data || data.url))) {
         return msg.channel.send("an error occured");
     }
-    let answer = new Discord.RichEmbed()
+    let answer = new RichEmbed()
         .setTitle("NASA Astronomy Picture of the Day")
         .setAuthor(data.copyright)
         .setImage(data.url)
@@ -568,8 +555,8 @@ async function apod(msg, date, defaul) {
     msg.channel.send(answer);
 }
 
-function notAllowed(msg) {
-    msg.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
+function notAllowed(message: Message) {
+    message.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
 }
 
 ON_DEATH(function (signal, err) {
@@ -578,5 +565,7 @@ ON_DEATH(function (signal, err) {
     client.destroy();
     process.exit();
 });
+
+
 
 client.login(config.Token);
