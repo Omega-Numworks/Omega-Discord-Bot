@@ -43,7 +43,7 @@ Commands:
   repository:
     input: "repositories"
     description: "Return the list of the repositories in the Omega project"
-    repository:
+    repositories:
       - url: "https://github.com/Omega-Numworks/Omega"
         name: "Omega"
         desc: "Omega main repository"

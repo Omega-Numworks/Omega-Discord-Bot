@@ -1,4 +1,4 @@
-import { Client, RichEmbed, Message } from 'discord.js';
+import { Client, RichEmbed, Message, RichEmbedOptions } from 'discord.js';
 const client = new Client();
 
 import fs from 'fs'
@@ -7,7 +7,6 @@ import axios from "axios";
 import yaml from "yaml";
 
 import moment from "moment";
-import ON_DEATH from 'death';
 
 
 // CONFIG
@@ -31,7 +30,7 @@ const chiffrer: RichEmbed = new RichEmbed()
     .setDescription("ON DIT CHIFFRER, ET PAS CRYPTER. :-)")
 
 function loadCommandsFromStorage() {
-    const file = fs.readFileSync("custom.json", "utf8")
+    const file = fs.readFileSync("customCommands.json", "utf8")
     const commandList = JSON.parse(file);
     const commandMap = new Map();
     for (let i = 0; i < commandList.length; i++) {
@@ -74,78 +73,78 @@ client.on('message', async (message: Message) => {
                 link = config["Numworks-Repository"];
             }
             const { body } = await axios.get(`https://api.github.com/repos/${link}/issues/${IssueId}`, {
-                    'User-Agent': 'Omega-Discord-Bot'
+                'User-Agent': 'Omega-Discord-Bot'
             })
-            ;((error, response, body) => {
-                body = JSON.parse(body);
-                if (error)
-                    message.channel.send("ERROR : " + error.toString());
-                if (response.statusCode === 200) {
-                    let embed = new RichEmbed()
-                        .setURL(body.html_url)
-                        .setTitle(body.title + " (#" + body.number + ")")
-                        .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
-                        .setDescription(body.body)
-                        .setTimestamp(Date.parse(body.created_at));
-                    let AdditionalInformations = "";
-                    if (body.state !== "open") {
-                        AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
-                        embed.setColor("a30000")
-                    } else {
-                        AdditionalInformations += ":white_check_mark: Open\n";
-                        embed.setColor("2b2b2b")
-                    }
-                    if (body.labels.length !== 0) {
-                        AdditionalInformations += ":label: Labels : ";
-                        body.labels.forEach((item, index) => {
-                            if (index !== 0) {
-                                AdditionalInformations += ", "
-                            }
-                            AdditionalInformations += item.name
-                        });
-                        AdditionalInformations += "\n"
-                    }
-                    if (body.assignees.length !== 0) {
-                        AdditionalInformations += ":person_frowning: Assigned to ";
-                        body.assignees.forEach((item, index) => {
-                            if (index !== 0) {
-                                AdditionalInformations += ", "
-                            }
-                            AdditionalInformations += item.login
-                        });
-                        AdditionalInformations += "\n"
-                    }
-                    if (body.locked) {
-                        AdditionalInformations += ":lock: locked\n"
-                    }
-                    if (body.pull_request !== undefined) {
-                        AdditionalInformations += ":arrows_clockwise: Pull request\n"
-                    }
-                    if (body.comments !== 0) {
-                        AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
-                    }
-                    if (IssueId.toLowerCase() === body.number + "c") {
-                        request({
-                            url: body.comments_url,
-                            headers: {
-                                'User-Agent': 'Omega-Discord-Bot'
-                            }
-                        }, (err, resp, bod) => {
-                            bod = JSON.parse(bod);
-                            bod.forEach((item) => {
-                                message.addField("**Answer of** " + item.user.login + " **" + moment(item.created_at).fromNow() + " (" + moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss") + " )**", item.body)
+                ; ((error, response, body) => {
+                    body = JSON.parse(body);
+                    if (error)
+                        message.channel.send("ERROR : " + error.toString());
+                    if (response.statusCode === 200) {
+                        let embed = new RichEmbed()
+                            .setURL(body.html_url)
+                            .setTitle(body.title + " (#" + body.number + ")")
+                            .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
+                            .setDescription(body.body)
+                            .setTimestamp(Date.parse(body.created_at));
+                        let AdditionalInformations = "";
+                        if (body.state !== "open") {
+                            AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment(body.closed_at).fromNow() + " (" + moment(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
+                            embed.setColor("a30000")
+                        } else {
+                            AdditionalInformations += ":white_check_mark: Open\n";
+                            embed.setColor("2b2b2b")
+                        }
+                        if (body.labels.length !== 0) {
+                            AdditionalInformations += ":label: Labels : ";
+                            body.labels.forEach((item, index) => {
+                                if (index !== 0) {
+                                    AdditionalInformations += ", "
+                                }
+                                AdditionalInformations += item.name
                             });
-                            message.addField("Additional informations", AdditionalInformations)
+                            AdditionalInformations += "\n"
+                        }
+                        if (body.assignees.length !== 0) {
+                            AdditionalInformations += ":person_frowning: Assigned to ";
+                            body.assignees.forEach((item, index) => {
+                                if (index !== 0) {
+                                    AdditionalInformations += ", "
+                                }
+                                AdditionalInformations += item.login
+                            });
+                            AdditionalInformations += "\n"
+                        }
+                        if (body.locked) {
+                            AdditionalInformations += ":lock: locked\n"
+                        }
+                        if (body.pull_request !== undefined) {
+                            AdditionalInformations += ":arrows_clockwise: Pull request\n"
+                        }
+                        if (body.comments !== 0) {
+                            AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n"
+                        }
+                        if (IssueId.toLowerCase() === body.number + "c") {
+                            request({
+                                url: body.comments_url,
+                                headers: {
+                                    'User-Agent': 'Omega-Discord-Bot'
+                                }
+                            }, (err, resp, bod) => {
+                                bod = JSON.parse(bod);
+                                bod.forEach((item) => {
+                                    message.addField("**Answer of** " + item.user.login + " **" + moment(item.created_at).fromNow() + " (" + moment(item.created_at).format("D, MMMM YYYY, HH:mm:ss") + " )**", item.body)
+                                });
+                                embed.addField("Additional informations", AdditionalInformations)
+                                    .setFooter(client.user.tag, client.user.avatarURL);
+                                message.channel.send(embed)
+                            })
+                        } else {
+                            embed.addField("Additional informations", AdditionalInformations)
                                 .setFooter(client.user.tag, client.user.avatarURL);
-                            msg.channel.send(message)
-                        })
-                    } else {
-                        message.addField("Additional informations", AdditionalInformations)
-                            .setFooter(client.user.tag, client.user.avatarURL);
-                        msg.channel.send(message)
+                            message.channel.send(embed)
+                        }
                     }
-                }
-            })
+                })
         }
     }
 
@@ -169,7 +168,7 @@ client.on('message', async (message: Message) => {
         else if (durationComplete <= config.DurationMin)
             durationComplete = config.DurationMin;
         setTimeout(() => {
-            msg.delete(0).catch(reason => console.log("The Message was already destroyed"))
+            message.delete(0).catch(reason => console.log("The Message was already destroyed"))
         }, durationComplete)
 
     }
@@ -180,139 +179,55 @@ client.on('message', async (message: Message) => {
     const [command, ...args] = withoutPrefix.toLocaleLowerCase().trim().split(/\s+/)
 
     if (command === Commands.help.input) {
-        let response = new RichEmbed()
+        const response = new RichEmbed()
             .setTitle("Here are the commands you can use with me")
             .setThumbnail(client.user.displayAvatarURL)
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        for (i in Commands) {
-            item = Commands[i];
-            response.addField(config.Prefix + item.input, item.description)
+        for (const command of Commands) {
+            response.addField(config.Prefix + command.input, command.description)
         }
-        msg.channel.send(response);
+        message.channel.send(response);
     } else if (command === Commands.repository.input) {
-        let response = new RichEmbed()
+        const response = new RichEmbed()
             .setTitle("Here are the repositories of the omega project")
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        for (i in Commands.repository.repository) {
-            item = Commands.repository.repository[i];
-            response.addField(item.name, item.desc + " (" + item.url + ")")
+        for (const repository of Commands.repository.repositories) {
+            response.addField(repository.name, `${repository.desc} (${repository.url})`)
         }
-        msg.channel.send(response);
+        message.channel.send(response);
     } else if (command === Commands.team.input) {
-        let response = new RichEmbed()
+        const response = new RichEmbed()
             .setTitle("Here are the people who develop the omega project")
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        let team = JSON.parse(fs.readFileSync(Commands.team.file));
+        const team = await import("./team.json")
         team.forEach(element => {
-            response.addField(element.name, "Github : " + element.Github + " Discord : " + client.users.find(user => user.id === element.DiscordId).tag)
+            response.addField(element.name, `Github : ${element.Github} Discord : ${client.users.get(element.DiscordId)?.tag}`)
         });
-        msg.channel.send(response);
-    } else if (command === Commands.hug.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        if (!msg.mentions.users.size) {
-            msg.reply('Are you alone :( ?')
-            return;
-        }
-        sendHug(msg, "hug", "hugged");
-    } else if (command === Commands.kiss.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        if (!msg.mentions.users.size) {
-            msg.reply('Are you alone :( ?')
-            return;
-        }
-        sendHug(msg, "kiss", "kissed");
-    } else if (command === Commands.cuddle.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        if (!msg.mentions.users.size) {
-            msg.reply('Are you alone :( ?')
-            return;
-        }
-        sendHug(msg, "cuddle", "cuddled");
-    } else if (command === Commands.pat.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        if (!msg.mentions.users.size) {
-            msg.reply('Are you alone :( ?')
-            return;
-        }
-        sendHug(msg, "pat", "head-patted");
-    } else if (command === Commands.waifu.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        sendImage(msg, "waifu", "waifu");
-    } else if (command === Commands.feed.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        if (!msg.mentions.users.size) {
-            msg.reply('Are you alone :( ?')
-            return;
-        }
-        sendHug(msg, "feed", "fed");
-    } else if (command === Commands.owo.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        let message = WithoutPrefix.substr(3, WithoutPrefix.length);
-        if (message.length === 0) {
-            msg.reply("Send a text :) !")
-            return;
-        }
-        owoify(msg, message);
-    } else if (command === Commands.fact.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        fact(msg);
-    } else if (command === Commands.kemonomimi.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
-            return;
-        }
-        sendImage(msg, "kemonomimi", "picture");
+        message.channel.send(response);
     } else if (command === Commands.apod.input) {
-        let message = withoutPrefix.substr(4, withoutPrefix.length);
-        if (!moment(message, "YYYY-MM-DD").isValid()) {
-            message = "";
+        let argsMessage = args.join(' ')
+        if (!moment(argsMessage, "YYYY-MM-DD").isValid()) {
+            argsMessage = "";
         }
-        if (!message.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
-            message = "";
+        if (!argsMessage.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
+            argsMessage = "";
         }
-        let s = moment(message, "YYYY-MM-DD");
-        if (s.isAfter(moment.now()))
-            message = "";
-        if (s.isBefore(moment("1995-06-17")));
-        message = "";
-        if (message.length > 0) {
-            apod(msg, message, false)
-            return;
-        }
-        apod(msg, message, true);
+        let s = moment(argsMessage, "YYYY-MM-DD");
+        if (s.isAfter(moment.now())) argsMessage = "";
+        if (s.isBefore(moment("1995-06-17"))) argsMessage = "";
+
+        const embed = getEmbedApod(message, argsMessage);
+        return message.channel.send(embed)
+
     } else if (command === "reload") {
         customCommandMap = loadCommandsFromStorage();
-        msg.reply("The command list was reloaded")
+        message.reply("The command list was reloaded")
     } else if (command === "custom") {
         if (!((msg.author.id === "339132422946029569") || (msg.author.id === "171318796433227776"))) {
             msg.reply("You do not have the permission to perform this command!");
@@ -360,7 +275,7 @@ client.on('message', async (message: Message) => {
                 .addField("!custom remove [cmd]", "Remove a custom command")
             msg.channel.send(response);
         }
-        saveCustomList()
+        saveCustomCommands()
     } else if (command === Commands.customs.input) {
         let response = new RichEmbed()
             .setTitle("List of custom commands")
@@ -451,17 +366,17 @@ client.on('message', async (message: Message) => {
             .setTimestamp()
         msg.channel.send(answer);
     } else if (command === Commands.compatibility.input) {
-        if (msg.guild.id !== "685936220395929600") {
-            notAllowed(msg);
+        if (message.guild.id !== "685936220395929600") {
+            notAllowed(message);
             return;
         }
-        let message = WithoutPrefix.trim().substr(13, WithoutPrefix.length).trim().split(" ");
+        let message = withoutPrefix.trim().substr(13, withoutPrefix.length).trim().split(" ");
         if (message.length < 2) {
-            msg.reply("You need 2 persons to do so!");
+            message.reply("You need 2 persons to do so!");
             return;
         }
         if (message.length > 2) {
-            msg.reply("Oh! Naughty you! Only 2 please ;)")
+            message.reply("Oh! Naughty you! Only 2 please ;)")
             return;
         }
         let random = Math.floor(Math.random() * 101);
@@ -478,94 +393,136 @@ client.on('message', async (message: Message) => {
     }
 
     /* Guild Commands */
-    /* hug, kiss, cuddle, pat, waifu, feed, owo, fact, kemonomimi, corona, egg, drunk, compat*/
+    /* hug,
+       kiss,
+       cuddle,
+       pat,
+       waifu,
+       feed,
+       owo,
+       fact,
+       kemonomimi,
+       corona,
+       egg,
+       drunk,
+       compat
+    */
+
+    if (message.guild.id !== "685936220395929600") return notAllowed(message)
+
+    if (command === Commands.hug.input) {
+        if (!message.mentions.users.size) return message.reply('Are you alone :( ?')
+        return sendInteraction(message, "hug", "hugged");
+    } else if (command === Commands.kiss.input) {
+        if (!message.mentions.users.size) return message.reply('Are you alone :( ?')
+        return sendInteraction(message, "kiss", "kissed");
+    } else if (command === Commands.cuddle.input) {
+
+        if (!message.mentions.users.size) return message.reply('Are you alone :( ?')
+        return sendInteraction(message, "cuddle", "cuddled");
+
+    } else if (command === Commands.pat.input) {
+        if (!message.mentions.users.size) return message.reply('Are you alone :( ?')
+        return sendInteraction(message, "pat", "head-patted");
+    } else if (command === Commands.waifu.input) {
+
+        return sendImage(message, "waifu", "waifu");
+    } else if (command === Commands.feed.input) {
+        if (!message.mentions.users.size) return message.reply('Are you alone :( ?')
+        return sendInteraction(message, "feed", "fed");
+    } else if (command === Commands.owo.input) {
+
+        if (args.length === 0) return message.reply("Send a text :) !");
+        const owoifyMessage = await owoify(message, args.join(''));
+        message.reply(owoifyMessage)
+
+    } else if (command === Commands.fact.input) {
+        const fact = await getFact(message);
+        message.reply(`Fun fact : ${fact}`)
+    } else if (command === Commands.kemonomimi.input) {
+        return sendImage(message, "kemonomimi", "picture");
+    }
+
 });
 
-function saveCustomList() {
-    let list = [];
-    for (let key of customCommandMap.keys()) {
+function saveCustomCommands() {
+    const list = [];
+    for (const key of customCommandMap.keys()) {
         list.push(customCommandMap.get(key));
     }
     fs.writeFileSync("custom.json", JSON.stringify(list), "utf8");
 }
 
-async function sendHug(msg, action, verb) {
+async function sendInteraction(message: Message, action: string, verb: string) {
     try {
-        const user = msg.mentions.users.first();
-        const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
-        if ((!(data || data.url)))
-            return msg.channel.send("an error occured");
-        let answer = new RichEmbed()
-            .setTitle("@" + user.username + "" + " is " + verb + " by @" + msg.author.username + "")
-            .setImage(data.url)
+        const user = message.mentions.users.first();
+        if (!user) return message.channel.send("Merci de préciser un utilisateur")
+
+        const url = await getNekoImageURL(action)
+        if (!url) return message.channel.send("an error occured");
+
+        const answer = new RichEmbed()
+            .setTitle(`@${user.username} is ${verb} by @${message.author.username}`)
+            .setImage(url)
             .addField("Provided by : ", "nekos.life")
-        msg.channel.send(answer)
+
+        message.channel.send(answer)
     } catch (e) {
         console.log(e)
-        return msg.channel.send("an error occured")
+        return message.channel.send("an error occured")
     }
 }
 
-async function sendImage(msg, action, text) {
+async function getNekoImageURL(action: string): Promise<string> {
+    const { data: { url } } = await axios.get(`https://nekos.life/api/v2/img/${action}`);
+    return url
+}
+
+async function sendImage(message: Message, action: string, text: string) {
     try {
-        const data = await (await fetch('https://nekos.life/api/v2/img/' + action)).json();
-        if ((!(data || data.url)))
-            return msg.channel.send("an error occured");
+        const url = await getNekoImageURL(action)
+        if (!url) return message.channel.send("an error occured");
         let answer = new RichEmbed()
             .setTitle("Here is your " + text)
-            .setImage(data.url)
+            .setImage(url)
             .addField("Provided by : ", "nekos.life")
-        msg.channel.send(answer)
+        message.channel.send(answer)
     } catch (e) {
         console.log(e)
-        return msg.channel.send("an error occured")
+        return message.channel.send("an error occured")
     }
 }
 
-async function owoify(msg, text) {
-    const data = await (await fetch('https://nekos.life/api/v2/owoify?text=' + escape(text))).json();
-    if ((!(data || data.owo)))
-        return msg.channel.send("an error occured");
-    msg.reply(data.owo)
+async function owoify(message: Message, text: string) {
+    const { data: { owo } } = await axios.get(`https://nekos.life/api/v2/owoify?text=${text}`);
+    if (!owo) return message.channel.send("an error occured");
+    return owo
 }
 
-async function fact(msg) {
-    const data = await (await fetch('https://nekos.life/api/v2/fact')).json();
-    if ((!(data || data.fact))) {
-        return msg.channel.send("an error occured");
-    }
-    msg.reply("Fun fact : " + data.fact)
+async function getFact(message: Message) {
+    const { data: { fact } } = await axios.get('https://nekos.life/api/v2/fact');
+    if (!fact) return message.channel.send("an error occured");
+
+    return fact
 }
 
-async function apod(msg, date, defaul) {
+async function getEmbedApod(message: Message, date: string = "") {
 
-    let link = 'https://api.nasa.gov/planetary/apod?api_key=' + nasa;
-    if (!defaul) {
-        link = link + "&date=" + date.trim();
-    }
-    const data = await (await fetch(link)).json();
-    if ((!(data || data.url))) {
-        return msg.channel.send("an error occured");
-    }
-    let answer = new RichEmbed()
+    let link = `https://api.nasa.gov/planetary/apod?api_key=${nasa}${`&date=${date.trim()}`}`;
+    const { data: { url, copyright, explanation } } = await axios.get(link);
+    if (!url) return message.channel.send("an error occured");
+
+    const answer = new RichEmbed()
         .setTitle("NASA Astronomy Picture of the Day")
-        .setAuthor(data.copyright)
-        .setImage(data.url)
-        .setDescription(data.explanation);
-    msg.channel.send(answer);
+        .setAuthor(copyright)
+        .setImage(url)
+        .setDescription(explanation);
+
+    return answer
 }
 
 function notAllowed(message: Message) {
     message.reply("Fun commands are not allowed on this server, go to https://discord.gg/rm85hDH")
 }
-
-ON_DEATH(function (signal, err) {
-    console.log("Destroying the bot.");
-    saveCustomList();
-    client.destroy();
-    process.exit();
-});
-
-
 
 client.login(config.Token);
