@@ -2,7 +2,7 @@
   "name": "omega-discord-bot",
   "version": "1.0.0",
   "description": "A discord bot for the omega-numworks project",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,14 +17,13 @@
     "discord-bot",
     "omega-discord"
   ],
-  "author": "Omega team",
+  "author": "Omega team, Teia",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Omega-Numworks/Omega-Discord-Bot/issues"
   },
   "homepage": "https://github.com/Omega-Numworks/Omega-Discord-Bot#readme",
   "dependencies": {
-    "@types/death": "^1.1.0",
     "@types/node": "^13.9.0",
     "@types/yaml": "^1.2.0",
     "axios": "^0.19.2",

@@ -46,6 +46,8 @@ client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
 });
 client.on('message', async (message) => {
+    if (message.author.bot)
+        return;
     const messageContent = message.content;
     if (messageContent.toLowerCase() === "good bot")
         return message.reply("Good human!");
@@ -160,8 +162,8 @@ client.on('message', async (message) => {
     }
     if (!messageContent.startsWith(config.Prefix))
         return;
-    const withoutPrefix = messageContent.replace(config.Prefix, "");
-    const [command, ...args] = withoutPrefix.toLocaleLowerCase().trim().split(/\s+/);
+    const [command, ...args] = messageContent.slice(config.Prefix.length).toLowerCase().trim().split(/\s+/);
+    console.log(args.join(" "));
     if (command === Commands.help.input) {
         const response = new discord_js_1.RichEmbed()
             .setTitle("Here are the commands you can use with me")
@@ -169,7 +171,7 @@ client.on('message', async (message) => {
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        for (const command of Commands) {
+        for (const command of Object.values(Commands)) {
             response.addField(config.Prefix + command.input, command.description);
         }
         message.channel.send(response);
@@ -219,7 +221,7 @@ client.on('message', async (message) => {
         message.reply("The command list was reloaded");
     }
     else if (command === "custom") {
-        if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776")) {
+        if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425")) {
             message.reply("You do not have the permission to perform this command!");
             return;
         }
@@ -231,13 +233,13 @@ client.on('message', async (message) => {
             }
             let command = {
                 "name": cmd,
-                action
+                "action": actionString
             };
             if (customCommandMap.has(cmd)) {
                 return message.reply("This command already exist.");
             }
             customCommandMap.set(cmd, command);
-            return message.reply(`You successfully registered the ${cmd} command`);
+            message.reply(`You successfully registered the ${cmd} command`);
         }
         else if (subcommand === "remove") {
             if (!customCommandMap.has(cmd))
@@ -256,7 +258,7 @@ client.on('message', async (message) => {
                 .addField("!custom remove [cmd]", "Remove a custom command");
             message.channel.send(response);
         }
-        saveCustomCommands();
+        return saveCustomCommands();
     }
     else if (command === Commands.customs.input) {
         const response = new discord_js_1.RichEmbed()
@@ -354,7 +356,7 @@ client.on('message', async (message) => {
         const embed = new discord_js_1.RichEmbed()
             .setColor("#0099ff")
             .setTitle("Hips!")
-            .setDescription(base)
+            .setDescription(answer)
             .setTimestamp();
         message.channel.send(embed);
     }
