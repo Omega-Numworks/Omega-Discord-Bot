@@ -4,7 +4,6 @@ dependencies:
   axios: 0.19.2
   discord.js: 11.6.2
   moment: 2.24.0
-  node-fetch: 2.6.0
   typescript: 3.8.3
   yaml: 1.8.2
 lockfileVersion: 5.1
@@ -98,12 +97,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
-  /node-fetch/2.6.0:
-    dev: false
-    engines:
-      node: 4.x || >=6.0.0
-    resolution:
-      integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
   /prism-media/0.0.4:
     dev: false
     resolution:
@@ -148,6 +141,5 @@ specifiers:
   axios: ^0.19.2
   discord.js: ^11.5.1
   moment: ^2.24.0
-  node-fetch: ^2.6.0
   typescript: ^3.8.3
   yaml: ^1.7.2
