@@ -1,9 +1,7 @@
 dependencies:
-  '@types/death': 1.1.0
   '@types/node': 13.9.0
   '@types/yaml': 1.2.0
   axios: 0.19.2
-  death: 1.1.0
   discord.js: 11.6.2
   moment: 2.24.0
   node-fetch: 2.6.0
@@ -17,10 +15,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-+AATMUFppJDw6aiR5NVPHqIQBlV/Pj8wY/EZH+lmvRdUo9xBaz/rF3alAwFJQavvKfeOlPE7oaaDHVbcySbCsg==
-  /@types/death/1.1.0:
-    dev: false
-    resolution:
-      integrity: sha512-etjyR7/GmUH8W4LWRQ1JsUex7RefjHqjNzPlCD/rZg0jB6pfARp9Exk9nCqPvo7H2YXXdAMtfLyilCnSo3/TpA==
   /@types/node/13.9.0:
     dev: false
     resolution:
@@ -39,10 +33,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
-  /death/1.1.0:
-    dev: false
-    resolution:
-      integrity: sha1-AaqcQB7dknUFFEcLgmY5DGbGcxg=
   /debug/3.1.0:
     dependencies:
       ms: 2.0.0
@@ -153,11 +143,9 @@ packages:
     resolution:
       integrity: sha512-omakb0d7FjMo3R1D2EbTKVIk6dAVLRxFXdLZMEUToeAvuqgG/YuHMuQOZ5fgk+vQ8cx+cnGKwyg+8g8PNT0xQg==
 specifiers:
-  '@types/death': ^1.1.0
   '@types/node': ^13.9.0
   '@types/yaml': ^1.2.0
   axios: ^0.19.2
-  death: ^1.1.0
   discord.js: ^11.5.1
   moment: ^2.24.0
   node-fetch: ^2.6.0
