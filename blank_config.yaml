@@ -1,0 +1,103 @@
+###### THIS IS A BLANK CONFIG ######
+# Editing this file is useless
+# You have to move it to config.yaml
+####################################
+
+Token: "INSERT HERE THE DISCORD BOT TOKEN"
+Channel: "ID OF CHANNEL OF THE 7S CHANNEL"
+
+Prefix: "!"
+
+DurationMin: 200
+DurationMax: 30000
+
+URL: "https://omega-numworks.github.io/"
+
+NASA_API_KEY: "NASA API KEY"
+
+ForbiddenWords:
+  - "slt"
+  - "salut"
+  - "bonjour"
+  - "bonsoir"
+
+ForbiddenWordsResponseFR: "dans les channels ne terminant pas par `-fr`, il est impératif d'écrire en anglais, étant donné que nous avons des contributeurs anglais. Si vous souhaitez parler en français, d'autres channels sont disponibles sur notre serveur. Plus d'infos sur <#663457765058150400>."
+ForbiddenWordsResponseEN: "in channels not ending with `-fr`, it is imperative to write in English, since we have English contributors. If you wish to speak in French, other channels are available on our server. More info on <#663457765058150400>."
+
+ShortForbiddenWords:
+  - "mdr"
+
+ShortForbiddenWordsResponse: "in english please!"
+
+Omega-Repository: "Omega-Numworks/Omega"
+Numworks-Repository: "numworks/Epsilon"
+
+Commands:
+  help:
+    input: "help"
+    description: "Return a help"
+  team:
+    input: "team"
+    description: "Return infos about the omega team"
+    file: "team.json"
+  repository:
+    input: "repositories"
+    description: "Return the list of the repositories in the Omega project"
+    repository:
+      - url: "https://github.com/Omega-Numworks/Omega"
+        name: "Omega"
+        desc: "Omega main repository"
+      - url: "https://github.com/Omega-Numworks/Omega-Themes"
+        name: "Omega themes"
+        desc: "Omega themes desc"
+      - url: "https://github.com/Omega-Numworks/Omega-CLI-Installer"
+        name: "Omega cli installer"
+        desc: "Omega cli installer desc"
+      - url: "https://github.com/Omega-Numworks/Omega-Design"
+        name: "Omega Design"
+        desc: "Omega design desc"
+    hug:
+      input: "hug"
+      description: "Hug someone"
+    kiss:
+      input: "kiss"
+      description: "Kiss someone"
+    cuddle:
+      input: "cuddle"
+      description: "cuddle someone"
+    pat:
+      input: "pat"
+      description: "pat someone"
+    waifu:
+      input: "waifu"
+      description: "Show a waifu"
+    feed:
+      input: "feed"
+      description: "Show a feed gif"
+    owo:
+      input: "owo"
+      description: "owoify a text"
+    fact:
+      input: "fact"
+      description: "send a fact"
+    kemonomimi:
+      input: "kemonomimi"
+      description: "send a kemonomimi picture (sfw)"
+    apod:
+      input: "apod"
+      description: "send the NASA Astronomy Picture Of the Day"
+    customs:
+      input: "customs"
+      description: "send the list of all customs commands"
+    corona:
+      input: "corona"
+      description: "verify is someone has the COVID-19 SRAS-CoV-2"
+    egg:
+      input: "egg"
+      description: "Tell you if someone is an egg"
+    drunk:
+      input: "drunk"
+      description: "Tell if someone is drunk"
+    compatibility:
+      input: "compatibility"
+      description: "Want to check if you're compatible with your SO?"
