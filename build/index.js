@@ -36,10 +36,9 @@ function loadCommandsFromStorage() {
     const file = fs_1.default.readFileSync("customCommands.json", "utf8");
     const commandList = JSON.parse(file);
     const commandMap = new Map();
-    for (let i = 0; i < commandList.length; i++) {
-        let command = commandList[i];
+    commandList.forEach((command) => {
         commandMap.set(command.name, command);
-    }
+    });
     return commandMap;
 }
 client.on('ready', () => {
@@ -49,93 +48,69 @@ client.on('message', async (message) => {
     if (message.author.bot)
         return;
     const messageContent = message.content;
+    const issuePosition = messageContent.indexOf("#");
+    if (issuePosition === -1 || messageContent[issuePosition + 1] === "<")
+        return;
+    const issueID = messageContent.substring(issuePosition + 1).split(" ")[0];
+    let index = issuePosition + issueID.length;
+    if (messageContent.charAt(issuePosition - 1) === "<" && messageContent.charAt(index) === ">")
+        return;
+    const link = issueID.charAt(issueID.length - 1) === 'e' ? config["Numworks-Repository"] : config["Omega-Repository"];
+    const { status, data } = (await axios_1.default.get(`https://api.github.com/repos/${link}/issues/${issueID}`));
+    if (status === 404)
+        return message.channel.send("Erreur lors de la requête (404)");
+    const { html_url, title, number, body, created_at, closed_at, closed_by, assignees, comments, locked, pull_request, state, comments_url, user, labels } = data;
+    const embed = new discord_js_1.RichEmbed()
+        .setURL(html_url)
+        .setTitle(`${title} (#${number})`)
+        .setAuthor(user.login, user.avatar_url, user.html_url)
+        .setDescription(body)
+        .setTimestamp(Date.parse(created_at));
+    const AdditionalInformations = [];
+    if (state !== "open") {
+        AdditionalInformations.push(`:x: Closed by ${closed_by.login} ${moment_1.default(closed_at).fromNow()} (${moment_1.default(closed_at).format("D, MMMM YYYY, HH:mm:ss")})`);
+        embed.setColor("a30000");
+    }
+    else {
+        AdditionalInformations.push(":white_check_mark: Open");
+        embed.setColor("2b2b2b");
+    }
+    if (labels.length !== 0) {
+        const labelsMap = labels.map(item => item.name);
+        AdditionalInformations.push(`:label: Labels : ${labelsMap.join(', ')}`);
+    }
+    if (assignees.length) {
+        const assignMap = assignees.map(item => item.login);
+        AdditionalInformations.push(`:person_frowning: Assigned to ${assignMap.join(', ')}`);
+    }
+    if (locked)
+        AdditionalInformations.push(":lock: locked");
+    if (pull_request)
+        AdditionalInformations.push(":arrows_clockwise: Pull request");
+    if (comments !== 0)
+        AdditionalInformations.push(`:speech_balloon: Comments : ${comments}`);
+    if (issueID.toLowerCase() === number + "c") {
+        const data = (await axios_1.default.get(comments_url)).data;
+        data.forEach((item) => {
+            embed.addField(`**Answer of**${item.user.login}** ${moment_1.default(item.created_at).fromNow()} (${moment_1.default(item.created_at).format("D, MMMM YYYY, HH:mm:ss")})**`, item.body);
+        });
+    }
+    embed.addField("Additional informations", AdditionalInformations.join('\n'))
+        .setFooter(client.user.tag, client.user.avatarURL);
+    message.channel.send(embed);
+});
+client.on('message', async (message) => {
+    var _a;
+    if (message.author.bot)
+        return;
+    const messageContent = message.content;
     if (messageContent.toLowerCase() === "good bot")
         return message.reply("Good human!");
     if (messageContent.toLowerCase() === "bad bot")
         return message.reply("Sorry :(");
-    for (let forbidden in forbiddenList) {
-        if (messageContent.toLowerCase().includes(forbiddenList[forbidden])) {
-            message.channel.send(chiffrer);
-            break;
-        }
-    }
-    const issuePosition = messageContent.indexOf("#");
-    let issueID;
-    if (issuePosition > -1 && messageContent[issuePosition + 1] !== "<") {
-        if (messageContent.substring(issuePosition + 1).includes(" ")) {
-            issueID = messageContent.substring(issuePosition + 1).split(" ")[0];
-        }
-        else {
-            issueID = messageContent.substring(issuePosition + 1);
-        }
-        let index = issuePosition + issueID.length;
-        if (!(messageContent.charAt(issuePosition - 1) === "<" && messageContent.charAt(index) === ">")) {
-            let link = config["Omega-Repository"];
-            if (issueID.charAt(issueID.length - 1) === 'e') {
-                link = config["Numworks-Repository"];
-            }
-            const data = await axios_1.default.get(`https://api.github.com/repos/${link}/issues/${issueID}`)
-                .catch(err => message.channel.send("ERROR : " + err.toString()));
-            const body = data.body;
-            const embed = new discord_js_1.RichEmbed()
-                .setURL(body.html_url)
-                .setTitle(body.title + " (#" + body.number + ")")
-                .setAuthor(body.user.login, body.user.avatar_url, body.user.html_url)
-                .setDescription(body.body)
-                .setTimestamp(Date.parse(body.created_at));
-            let AdditionalInformations = "";
-            if (body.state !== "open") {
-                AdditionalInformations += ":x: Closed by " + body.closed_by.login + " " + moment_1.default(body.closed_at).fromNow() + " (" + moment_1.default(body.closed_at).format("D, MMMM YYYY, HH:mm:ss") + " )\n";
-                embed.setColor("a30000");
-            }
-            else {
-                AdditionalInformations += ":white_check_mark: Open\n";
-                embed.setColor("2b2b2b");
-            }
-            if (body.labels.length !== 0) {
-                AdditionalInformations += ":label: Labels : ";
-                body.labels.forEach((item, index) => {
-                    if (index !== 0) {
-                        AdditionalInformations += ", ";
-                    }
-                    AdditionalInformations += item.name;
-                });
-                AdditionalInformations += "\n";
-            }
-            if (body.assignees.length !== 0) {
-                AdditionalInformations += ":person_frowning: Assigned to ";
-                body.assignees.forEach((item, index) => {
-                    if (index !== 0) {
-                        AdditionalInformations += ", ";
-                    }
-                    AdditionalInformations += item.login;
-                });
-                AdditionalInformations += "\n";
-            }
-            if (body.locked) {
-                AdditionalInformations += ":lock: locked\n";
-            }
-            if (body.pull_request !== undefined) {
-                AdditionalInformations += ":arrows_clockwise: Pull request\n";
-            }
-            if (body.comments !== 0) {
-                AdditionalInformations += ":speech_balloon: Comments : " + body.comments + "\n";
-            }
-            if (issueID.toLowerCase() === body.number + "c") {
-                const resp = await axios_1.default.get(body.comments_url);
-                const body = resp.body;
-                body.forEach((item) => {
-                    embed.addField(`**Answer of**${item.user.login}** ${moment_1.default(item.created_at).fromNow()} (${moment_1.default(item.created_at).format("D, MMMM YYYY, HH:mm:ss")})**`, item.body);
-                });
-                embed.addField("Additional informations", AdditionalInformations)
-                    .setFooter(client.user.tag, client.user.avatarURL);
-                message.channel.send(embed);
-            }
-            else {
-                embed.addField("Additional informations", AdditionalInformations)
-                    .setFooter(client.user.tag, client.user.avatarURL);
-                message.channel.send(embed);
-            }
+    for (let forbidden of forbiddenList) {
+        if (messageContent.toLowerCase().includes(forbidden)) {
+            return message.channel.send(chiffrer);
         }
     }
     if (message.channel.id === config.Channel) {
@@ -163,7 +138,6 @@ client.on('message', async (message) => {
     if (!messageContent.startsWith(config.Prefix))
         return;
     const [command, ...args] = messageContent.slice(config.Prefix.length).toLowerCase().trim().split(/\s+/);
-    console.log(args.join(" "));
     if (command === Commands.help.input) {
         const response = new discord_js_1.RichEmbed()
             .setTitle("Here are the commands you can use with me")
@@ -193,7 +167,7 @@ client.on('message', async (message) => {
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        const team = await Promise.resolve().then(() => __importStar(require("./team.json")));
+        const team = await Promise.resolve().then(() => __importStar(require("../team.json")));
         team.forEach(element => {
             var _a;
             response.addField(element.name, `Github : ${element.Github} Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
@@ -213,7 +187,7 @@ client.on('message', async (message) => {
             argsMessage = "";
         if (s.isBefore(moment_1.default("1995-06-17")))
             argsMessage = "";
-        const embed = getEmbedApod(message, argsMessage);
+        const embed = await getEmbedApod(message, argsMessage);
         return message.channel.send(embed);
     }
     else if (command === "reload") {
@@ -267,23 +241,17 @@ client.on('message', async (message) => {
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        const list = [];
-        for (let key of customCommandMap.keys()) {
-            list.push(customCommandMap.get(key));
-        }
-        for (let command of list) {
+        for (let command of customCommandMap.values()) {
             response.addField(`${config.Prefix}${command.name}`, command.action);
         }
         message.channel.send(response);
     }
-    else {
-        if (customCommandMap.has(command)) {
-            message.channel.send(customCommandMap.get(command).action);
-        }
-    }
     if (message.guild.id !== "685936220395929600")
         return notAllowed(message);
-    if (command === Commands.hug.input) {
+    if (customCommandMap.has(command)) {
+        message.channel.send((_a = customCommandMap.get(command)) === null || _a === void 0 ? void 0 : _a.action);
+    }
+    else if (command === Commands.hug.input) {
         if (!message.mentions.users.size)
             return message.reply('Are you alone :( ?');
         return sendInteraction(message, "hug", "hugged");
