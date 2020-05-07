@@ -9,6 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const axios_1 = __importDefault(require("axios"));
 const yaml_1 = __importDefault(require("yaml"));
 const moment_1 = __importDefault(require("moment"));
+const owoifier = require('@zuzak/owo');
 const config = yaml_1.default.parse(fs_1.default.readFileSync("config.yaml", "utf8"));
 const Commands = config.Commands;
 let customCommandMap = loadCommandsFromStorage();
@@ -244,7 +245,7 @@ client.on('message', async (message) => {
         message.channel.send(response);
         return;
     }
-    if (message.guild.id !== "685936220395929600")
+    if (message.guild.id !== config.fun_server_id)
         return notAllowed(message);
     if (customCommandMap.has(command)) {
         message.channel.send((_a = customCommandMap.get(command)) === null || _a === void 0 ? void 0 : _a.action);
@@ -280,7 +281,7 @@ client.on('message', async (message) => {
     else if (command === Commands.owo.input) {
         if (args.length === 0)
             return message.reply("Send a text :) !");
-        const owoifyMessage = await owoify(message, args.join(''));
+        const owoifyMessage = await owoify(message, args.join(' '));
         message.reply(owoifyMessage);
     }
     else if (command === Commands.fact.input) {
@@ -389,10 +390,8 @@ async function sendImage(message, action, text) {
     }
 }
 async function owoify(message, text) {
-    const { data: { owo } } = await axios_1.default.get(`https://nekos.life/api/v2/owoify?text=${text}`);
-    if (!owo)
-        return message.channel.send("an error occured");
-    return owo;
+    console.log(text);
+    return owoifier.translate(text);
 }
 async function getFact(message) {
     const { data: { fact } } = await axios_1.default.get('https://nekos.life/api/v2/fact');

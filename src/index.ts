@@ -8,6 +8,7 @@ import axios from "axios";
 import yaml from 'yaml';
 
 import moment from "moment";
+const owoifier = require('@zuzak/owo');
 
 // CONFIG
 const config = yaml.parse(fs.readFileSync("config.yaml", "utf8"));
@@ -339,7 +340,7 @@ client.on('message', async (message: Message) => {
        compat
     */
 
-    if (message.guild.id !== "685936220395929600") return notAllowed(message)
+    if (message.guild.id !== config.fun_server_id) return notAllowed(message)
 
     if (customCommandMap.has(command)) {
         message.channel.send(customCommandMap.get(command)?.action);
@@ -366,7 +367,7 @@ client.on('message', async (message: Message) => {
     } else if (command === Commands.owo.input) {
 
         if (args.length === 0) return message.reply("Send a text :) !");
-        const owoifyMessage = await owoify(message, args.join(''));
+        const owoifyMessage = await owoify(message, args.join(' '));
         message.reply(owoifyMessage)
 
     } else if (command === Commands.fact.input) {
@@ -488,9 +489,7 @@ async function sendImage(message: Message, action: string, text: string) {
 }
 
 async function owoify(message: Message, text: string) {
-    const { data: { owo } } = await axios.get(`https://nekos.life/api/v2/owoify?text=${text}`);
-    if (!owo) return message.channel.send("an error occured");
-    return owo
+    return owoifier.translate(text);
 }
 
 async function getFact(message: Message) {
