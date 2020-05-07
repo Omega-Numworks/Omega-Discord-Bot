@@ -2,13 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const client = new discord_js_1.Client();
@@ -149,6 +142,7 @@ client.on('message', async (message) => {
             response.addField(config.Prefix + command.input, command.description);
         }
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.repository.input) {
         const response = new discord_js_1.RichEmbed()
@@ -160,6 +154,7 @@ client.on('message', async (message) => {
             response.addField(repository.name, `${repository.desc} (${repository.url})`);
         }
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.team.input) {
         const response = new discord_js_1.RichEmbed()
@@ -167,12 +162,13 @@ client.on('message', async (message) => {
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        const team = await Promise.resolve().then(() => __importStar(require("../team.json")));
+        const team = await JSON.parse(fs_1.default.readFileSync("team.json", "utf8"));
         team.forEach(element => {
             var _a;
-            response.addField(element.name, `Github : ${element.Github} Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
+            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
         });
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.apod.input) {
         let argsMessage = args.join(' ');
@@ -193,6 +189,7 @@ client.on('message', async (message) => {
     else if (command === "reload") {
         customCommandMap = loadCommandsFromStorage();
         message.reply("The command list was reloaded");
+        return;
     }
     else if (command === "custom") {
         if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425")) {
@@ -245,6 +242,7 @@ client.on('message', async (message) => {
             response.addField(`${config.Prefix}${command.name}`, command.action);
         }
         message.channel.send(response);
+        return;
     }
     if (message.guild.id !== "685936220395929600")
         return notAllowed(message);

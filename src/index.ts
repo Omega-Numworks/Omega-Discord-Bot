@@ -4,7 +4,8 @@ const client = new Client();
 import fs from 'fs'
 import axios from "axios";
 
-import yaml from "yaml";
+// @ts-ignore
+import yaml from 'yaml';
 
 import moment from "moment";
 
@@ -43,6 +44,12 @@ client.on('ready', () => {
     console.log(`Connected as ${client.user.tag}!`);
 });
 
+interface contributor {
+    name: string,
+    Github: string,
+    role: string,
+    DiscordId: string
+}
 
 /* Github message handler */
 client.on('message', async (message: Message) => {
@@ -61,6 +68,8 @@ client.on('message', async (message: Message) => {
     if (messageContent.charAt(issuePosition - 1) === "<" && messageContent.charAt(index) === ">") return
 
     const link = issueID.charAt(issueID.length - 1) === 'e' ? config["Numworks-Repository"] : config["Omega-Repository"];
+
+
 
     interface githubResponse {
         title: string,
@@ -206,9 +215,11 @@ client.on('message', async (message: Message) => {
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
         for (const command of Object.values(Commands)) {
+            // @ts-ignore
             response.addField(config.Prefix + command.input, command.description)
         }
         message.channel.send(response);
+        return;
     } else if (command === Commands.repository.input) {
         const response = new RichEmbed()
             .setTitle("Here are the repositories of the omega project")
@@ -219,17 +230,20 @@ client.on('message', async (message: Message) => {
             response.addField(repository.name, `${repository.desc} (${repository.url})`)
         }
         message.channel.send(response);
+        return;
     } else if (command === Commands.team.input) {
         const response = new RichEmbed()
             .setTitle("Here are the people who develop the omega project")
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        const team = await import("../team.json")
+        const team: Array<contributor> = await JSON.parse(fs.readFileSync("team.json", "utf8"))
         team.forEach(element => {
-            response.addField(element.name, `Github : ${element.Github} Discord : ${client.users.get(element.DiscordId)?.tag}`)
+            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${client.users.get(element.DiscordId)?.tag}`)
         });
         message.channel.send(response);
+        return;
+
     } else if (command === Commands.apod.input) {
         let argsMessage = args.join(' ')
         if (!moment(argsMessage, "YYYY-MM-DD").isValid()) {
@@ -248,6 +262,8 @@ client.on('message', async (message: Message) => {
     } else if (command === "reload") {
         customCommandMap = loadCommandsFromStorage();
         message.reply("The command list was reloaded")
+        return;
+
     } else if (command === "custom") {
         if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425")) {
             message.reply("You do not have the permission to perform this command!");
@@ -303,6 +319,8 @@ client.on('message', async (message: Message) => {
             response.addField(`${config.Prefix}${command.name}`, command.action);
         }
         message.channel.send(response);
+        return;
+
     }
 
     /* Guild Commands */
