@@ -2,13 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const client = new discord_js_1.Client();
@@ -16,6 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const axios_1 = __importDefault(require("axios"));
 const yaml_1 = __importDefault(require("yaml"));
 const moment_1 = __importDefault(require("moment"));
+const owoifier = require('@zuzak/owo');
 const config = yaml_1.default.parse(fs_1.default.readFileSync("config.yaml", "utf8"));
 const Commands = config.Commands;
 let customCommandMap = loadCommandsFromStorage();
@@ -149,6 +143,7 @@ client.on('message', async (message) => {
             response.addField(config.Prefix + command.input, command.description);
         }
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.repository.input) {
         const response = new discord_js_1.RichEmbed()
@@ -160,6 +155,7 @@ client.on('message', async (message) => {
             response.addField(repository.name, `${repository.desc} (${repository.url})`);
         }
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.team.input) {
         const response = new discord_js_1.RichEmbed()
@@ -167,12 +163,13 @@ client.on('message', async (message) => {
             .setTimestamp(new Date())
             .setURL(config.URL)
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
-        const team = await Promise.resolve().then(() => __importStar(require("../team.json")));
+        const team = await JSON.parse(fs_1.default.readFileSync("team.json", "utf8"));
         team.forEach(element => {
             var _a;
-            response.addField(element.name, `Github : ${element.Github} Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
+            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
         });
         message.channel.send(response);
+        return;
     }
     else if (command === Commands.apod.input) {
         let argsMessage = args.join(' ');
@@ -193,6 +190,7 @@ client.on('message', async (message) => {
     else if (command === "reload") {
         customCommandMap = loadCommandsFromStorage();
         message.reply("The command list was reloaded");
+        return;
     }
     else if (command === "custom") {
         if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425")) {
@@ -245,8 +243,9 @@ client.on('message', async (message) => {
             response.addField(`${config.Prefix}${command.name}`, command.action);
         }
         message.channel.send(response);
+        return;
     }
-    if (message.guild.id !== "685936220395929600")
+    if (message.guild.id !== config.fun_server_id)
         return notAllowed(message);
     if (customCommandMap.has(command)) {
         message.channel.send((_a = customCommandMap.get(command)) === null || _a === void 0 ? void 0 : _a.action);
@@ -282,7 +281,7 @@ client.on('message', async (message) => {
     else if (command === Commands.owo.input) {
         if (args.length === 0)
             return message.reply("Send a text :) !");
-        const owoifyMessage = await owoify(message, args.join(''));
+        const owoifyMessage = await owoify(message, args.join(' '));
         message.reply(owoifyMessage);
     }
     else if (command === Commands.fact.input) {
@@ -391,10 +390,8 @@ async function sendImage(message, action, text) {
     }
 }
 async function owoify(message, text) {
-    const { data: { owo } } = await axios_1.default.get(`https://nekos.life/api/v2/owoify?text=${text}`);
-    if (!owo)
-        return message.channel.send("an error occured");
-    return owo;
+    console.log(text);
+    return owoifier.translate(text);
 }
 async function getFact(message) {
     const { data: { fact } } = await axios_1.default.get('https://nekos.life/api/v2/fact');

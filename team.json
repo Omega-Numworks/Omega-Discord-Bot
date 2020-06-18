@@ -1,7 +1,92 @@
 [
-    {
-        "name" : "Quentin",
-        "Github" : "@quentinguidee",
-        "DiscordId" : "339132422946029569"
-    }
+  {
+    "name": "Quentin Guidée",
+    "Github": "@quentinguidee",
+    "role": "creator, discord admin, discord moderator, god",
+    "DiscordId": "339132422946029569"
+  },
+  {
+    "name": "Danny Simmons",
+    "Github": "@MixedMatched",
+    "role": "developer",
+    "DiscordId": "664449002116349971"
+  },
+  {
+    "name": "Joachim Le Fournis",
+    "Github": "redgl0w",
+    "role": "developer, discord moderator",
+    "DiscordId": "232545925652938752"
+  },
+  {
+    "name": "Jean-Baptiste Boric",
+    "Github": "@boricjb",
+    "role": "developer",
+    "DiscordId": "648607564212338717"
+  },
+  {
+    "name": "Maxime Friess",
+    "Github": "@M4x1m3",
+    "role": "developer, discord moderator",
+    "DiscordId": "513424844398788619"
+  },
+  {
+    "name": "David",
+    "Github": "@0b101",
+    "role": "developer",
+    "DiscordId": "314166540498894858"
+  },
+  {
+    "name": "Damien Nicolet",
+    "Github": "@zardam",
+    "role": "developer",
+    "DiscordId": ""
+  },
+  {
+    "name": "Evann Dreumont",
+    "Github": "@LeGmask",
+    "role": "developer",
+    "DiscordId": "382589295891841024"
+  },
+  {
+    "name": "Szabó Levente",
+    "Github": "@Gegenter",
+    "role": "developer",
+    "DiscordId": "203847469438599168"
+  },
+  {
+    "name": "Venceslas Duet",
+    "Github": "@Citorva",
+    "role": "developer",
+    "DiscordId": "259664538914258945"
+  },
+  {
+    "name": "Charlotte Thomas",
+    "Github": "@coco33920",
+    "role": "developer, discord moderator",
+    "DiscordId": "171318796433227776"
+  },
+  {
+    "name": "Cyprien Méjat",
+    "Github": "@A2drien",
+    "role": "beta tester, discord moderator",
+    "DiscordId": "453197755968651284"
+  },
+  {
+    "name": "Julie C.",
+    "Github": "@windows9x95",
+    "role": "beta tester",
+    "DiscordId": "645606980446322708"
+  },
+  {
+    "name": "Timéo Arnouts",
+    "Github": "@Dogm",
+    "role": "beta tester",
+    "DiscordId": "629711568174841878"
+  },
+  {
+    "name": "Lélahel Hideux",
+    "Github": "@Lalehelry",
+    "role": "beta tester",
+    "DiscordId": "177332519245578240"
+  }
 ]
