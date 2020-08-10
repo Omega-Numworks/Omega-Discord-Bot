@@ -240,7 +240,7 @@ client.on('message', async (message: Message) => {
             .setAuthor(client.user.tag, client.user.displayAvatarURL, config.URL);
         const team: Array<contributor> = await JSON.parse(fs.readFileSync("team.json", "utf8"))
         team.forEach(element => {
-            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${client.users.get(element.DiscordId)?.tag}`)
+            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${client.users.get(element.DiscordId)?.tag}`, true)
         });
         message.channel.send(response);
         return;
@@ -391,7 +391,7 @@ client.on('message', async (message: Message) => {
     } else if (command === Commands.egg.input) {
         const user = args.join(' ') || message.author.username
 
-        const random = user.toLowerCase() === "quentin" ? 100 : Math.floor(Math.random() * 101);
+        const random = user.toLowerCase() === "quentin" || user.toLowerCase() === "téia" ? 100 : Math.floor(Math.random() * 101);
         const base = "My Magic Told Me That... **";
 
         const end = random > 50 ? "** is an egg!" : "** isnt an egg!";
