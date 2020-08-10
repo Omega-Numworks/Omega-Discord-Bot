@@ -166,7 +166,7 @@ client.on('message', async (message) => {
         const team = await JSON.parse(fs_1.default.readFileSync("team.json", "utf8"));
         team.forEach(element => {
             var _a;
-            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`);
+            response.addField(element.name, `Role : ${element.role} \n Github : ${element.Github} \n Discord : ${(_a = client.users.get(element.DiscordId)) === null || _a === void 0 ? void 0 : _a.tag}`, true);
         });
         message.channel.send(response);
         return;
@@ -303,7 +303,7 @@ client.on('message', async (message) => {
     }
     else if (command === Commands.egg.input) {
         const user = args.join(' ') || message.author.username;
-        const random = user.toLowerCase() === "quentin" ? 100 : Math.floor(Math.random() * 101);
+        const random = user.toLowerCase() === "quentin" || user.toLowerCase() === "téia" ? 100 : Math.floor(Math.random() * 101);
         const base = "My Magic Told Me That... **";
         const end = random > 50 ? "** is an egg!" : "** isnt an egg!";
         const answer = `${base}${user}${end}`;
@@ -390,7 +390,6 @@ async function sendImage(message, action, text) {
     }
 }
 async function owoify(message, text) {
-    console.log(text);
     return owoifier.translate(text);
 }
 async function getFact(message) {
