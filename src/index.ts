@@ -158,6 +158,17 @@ client.on('message', async (message: Message) => {
     message.channel.send(embed)
 })
 
+function isAllowed(message: Message) {
+    var allowed = message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425";
+    if(allowed)
+        return true
+    message.member.roles.cache.each((role : Role) => {
+        if(role.id == "704314897823170581")
+            allowed = true
+    });
+    return allowed
+}
+
 
 /* Commands message handler */
 client.on('message', async (message: Message) => {
@@ -266,7 +277,7 @@ client.on('message', async (message: Message) => {
         return;
 
     } else if (command === "custom") {
-        if (!(message.author.id === "339132422946029569" || message.author.id === "171318796433227776" || message.author.id === "338625981529063425")) {
+        if (!isAllowed(message)) {
             message.reply("You do not have the permission to perform this command!");
             return;
         }
